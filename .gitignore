@@ -71,4 +71,4 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 # Core is a separate project
-/[Aa]ssets/Core
+/[Aa]ssets/Core/

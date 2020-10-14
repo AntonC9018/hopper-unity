@@ -1,0 +1,1 @@
+Through console, run `git clone https://github.com/AntonC9018/hopper.cs Core` in the Assets folder.
