@@ -244,12 +244,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1704049825}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: caa0ccdc95b794a49a60a58508cec79e, type: 3}
+  m_Script: {fileID: 11500000, guid: 7049f586b821e094fbee3b60347e884d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 950320283363426560, guid: bb1df3d66e47e8c4d8cf63032db95d8b,
     type: 3}
-  enemyPrefab: {fileID: 0}
-  wallPrefab: {fileID: 0}
+  enemyPrefab: {fileID: 7249867049834488878, guid: c73572cbf00bead4389072e435f840db,
+    type: 3}
+  wallPrefab: {fileID: 1666979532132274622, guid: 6eec5e162731b874aa86d998139cbef6,
+    type: 3}
   tilePrefab: {fileID: 8718207446532856479, guid: d3796620904b663459420a404134a98a,
     type: 3}
