@@ -255,3 +255,7 @@ MonoBehaviour:
     type: 3}
   tilePrefab: {fileID: 8718207446532856479, guid: d3796620904b663459420a404134a98a,
     type: 3}
+  chestPrefab: {fileID: 1190183502332052718, guid: 1dbfc8f4d5cb0cf488674f831495feeb,
+    type: 3}
+  droppedItemPrefab: {fileID: 7548362609548230737, guid: 98e701a9d20d41f45a73cafa6a9cc46c,
+    type: 3}

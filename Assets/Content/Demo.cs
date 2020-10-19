@@ -16,58 +16,56 @@ namespace Hopper
         public GameObject enemyPrefab;
         public GameObject wallPrefab;
         public GameObject tilePrefab;
+        public GameObject chestPrefab;
+        public GameObject droppedItemPrefab;
 
         private World m_world;
         private GameObject m_playerObject;
-        private float referenceWidth;
+        private float m_referenceWidth;
         private List<GameObject> m_enemyObjects;
+        private List<GameObject> m_droppedItemsObjects;
+
+        private ModularTargetingItem m_shovelItem;
+        private ModularTargetingItem m_knifeItem;
+
+        private ISuperPool CreateItemPool()
+        {
+            var poolDef = new PoolDefinition<NormalSubPool>();
+
+            PoolItem[] items = new[]
+            {
+                new PoolItem(m_knifeItem.Id, 1),
+                new PoolItem(m_shovelItem.Id, 1),
+            };
+            poolDef.RegisterItems(items);
+
+            Pool zone1dir = new Pool();
+            SubPool weapons = new NormalSubPool();
+            SubPool shovels = new NormalSubPool();
+
+            poolDef.m_baseDir.AddDirectory("zone1", zone1dir);
+            zone1dir.AddFile("weapons", new NormalSubPool());
+            zone1dir.AddFile("shovels", new NormalSubPool());
+            poolDef.AddItemToPool(items[0], "zone1/weapons");
+            poolDef.AddItemToPool(items[1], "zone1/shovels");
+
+            var superPool = new SuperPool<NormalSubPool>(poolDef);
+
+            return superPool;
+        }
 
         void Start()
         {
             Utils.UnitySystemConsoleRedirector.Redirect();
 
-            var moveAction = new BehaviorAction<Moving>();
-            var digAction = new BehaviorAction<Digging>();
-            var attackAction = new BehaviorAction<Attacking>();
+            CreateItems();
 
-            var defaultAction = new CompositeAction(
-                attackAction,
-                digAction,
-                moveAction
-            );
+            var itemPool = CreateItemPool();
+            var entityPool = new ThrowawayPool();
 
-            var playerFactory = new EntityFactory<Player>()
-                .AddBehavior<Acting>(new Acting.Config(Algos.SimpleAlgo, null))
-                .AddBehavior<Moving>()
-                .AddBehavior<Displaceable>()
-                .AddBehavior<Controllable>(new Controllable.Config
-                {
-                    defaultAction = defaultAction
-                })
-                .AddBehavior<Attackable>()
-                .AddBehavior<Damageable>()
-                .AddBehavior<Attacking>()
-                .Retouch(Core.Retouchers.Skip.EmptyAttack)
-                .AddBehavior<Digging>()
-                .Retouch(Core.Retouchers.Skip.EmptyDig);
+            ContentProvider.DefaultProvider.UsePools(entityPool, itemPool);
 
-            var rightPiece = new Piece { dir = IntVector2.Right, pos = IntVector2.Right };
-
-            var shovelTargetProvider = new TargetProvider<DigTarget>(
-                new List<Piece>(1) { rightPiece },
-                Handlers.DigChain);
-
-            var knifeTargetProvider = new TargetProvider<AtkTarget>(
-                new List<Piece>(1) { rightPiece },
-                Handlers.GeneralChain);
-
-            var shovelItem = new ModularTargetingItem(
-                Inventory.ShovelSlot,
-                shovelTargetProvider);
-
-            var knifeItem = new ModularTargetingItem(
-                Inventory.WeaponSlot,
-                knifeTargetProvider);
+            var playerFactory = CreatePlayerFactory();
 
             var wallFactory = new EntityFactory<Wall>()
                 .AddBehavior<Attackable>()
@@ -78,24 +76,29 @@ namespace Hopper
 
             var enemyFactory = Test.Skeleton.Factory;
 
-            m_world = new World(50, 50);
+            var chestFactory = new EntityFactory<Entity>()
+                .AddBehavior<Interactable>(
+                    new Interactable.Config
+                    {
+                        contentConfig = new ContentConfig
+                        {
+                            type = ContentType.ITEM,
+                            isAforeset = false,
+                            poolPath = "zone1/shovels"
+                        }
+                    }
+                );
 
-            Generator generator = new Generator(50, 50, new Generator.Options
-            {
-                min_hallway_length = 2,
-                max_hallway_length = 5
-            });
+            var itemMap = IdMap.Items.PackModMap();
+            IdMap.Items.SetServerMap(itemMap);
 
-            generator.AddRoom(new IntVector2(5, 5));
-            generator.AddRoom(new IntVector2(5, 5));
-            generator.AddRoom(new IntVector2(5, 5));
-            generator.AddRoom(new IntVector2(5, 5));
-            generator.AddRoom(new IntVector2(5, 5));
+            var generator = CreateGenerator();
             generator.Generate();
+            m_world = new World(generator.grid.GetLength(1), generator.grid.GetLength(0));
 
-            referenceWidth = playerPrefab.GetComponent<SpriteRenderer>().size.x;
-
+            m_referenceWidth = playerPrefab.GetComponent<SpriteRenderer>().size.x;
             m_enemyObjects = new List<GameObject>();
+            m_droppedItemsObjects = new List<GameObject>();
 
             for (int y = 0; y < generator.grid.GetLength(1); y++)
             {
@@ -103,12 +106,12 @@ namespace Hopper
                 {
                     if (generator.grid[x, y] != Generator.Mark.EMPTY)
                     {
-                        var position = new Vector3(x * referenceWidth, -y * referenceWidth, 0);
+                        var position = new Vector3(x * m_referenceWidth, -y * m_referenceWidth, 0);
                         var instance = Instantiate(tilePrefab, position, Quaternion.identity);
 
                         if (generator.grid[x, y] == Generator.Mark.WALL)
                         {
-                            position = new Vector3(x * referenceWidth, -y * referenceWidth, -1);
+                            position = new Vector3(x * m_referenceWidth, -y * m_referenceWidth, -1);
                             instance = Instantiate(wallPrefab, position, Quaternion.identity);
                             m_world.SpawnEntity(wallFactory, new IntVector2(x, y));
                         }
@@ -133,7 +136,7 @@ namespace Hopper
 
             m_playerObject = Instantiate(
                 playerPrefab,
-                new Vector3(center.x * referenceWidth, -center.y * referenceWidth, -1),
+                new Vector3(center.x * m_referenceWidth, -center.y * m_referenceWidth, -1),
                 Quaternion.identity);
 
             Camera.main.transform.position = new Vector3(
@@ -142,10 +145,15 @@ namespace Hopper
                 Camera.main.transform.position.z);
 
             {
-                var p = new Vector3((center.x + 1) * referenceWidth, -(center.y + 1) * referenceWidth, -1);
-                var i = Instantiate(enemyPrefab, p, Quaternion.identity);
-                m_world.SpawnEntity(enemyFactory, new IntVector2((center.x + 1), (center.y + 1)));
-                m_enemyObjects.Add(i);
+                var pos = new Vector3(
+                    (center.x + 1) * m_referenceWidth,
+                    -(center.y + 1) * m_referenceWidth,
+                    -1);
+                var ins = Instantiate(chestPrefab, pos, Quaternion.identity);
+                m_world.SpawnEntity(
+                    chestFactory,
+                    new IntVector2(center.x + 1, center.y + 1));
+                m_enemyObjects.Add(ins);
             }
         }
 
@@ -154,12 +162,13 @@ namespace Hopper
         // Update is called once per frame
         void Update()
         {
-            var map = new Dictionary<KeyCode, ChainName>();
-            map.Add(KeyCode.UpArrow, InputMappings.Up);
-            map.Add(KeyCode.DownArrow, InputMappings.Down);
-            map.Add(KeyCode.LeftArrow, InputMappings.Left);
-            map.Add(KeyCode.RightArrow, InputMappings.Right);
-            map.Add(KeyCode.Space, InputMappings.Weapon_0);
+            var map = new Dictionary<KeyCode, ChainName>{
+                { KeyCode.UpArrow, InputMappings.Up },
+                { KeyCode.DownArrow, InputMappings.Down },
+                { KeyCode.LeftArrow, InputMappings.Left },
+                { KeyCode.RightArrow, InputMappings.Right },
+                { KeyCode.Space, InputMappings.Weapon_0 },
+            };
 
             // TODO: obviously redo
             if (LastInput != null)
@@ -202,8 +211,8 @@ namespace Hopper
                         if (displacementUpdate != null)
                         {
                             m_playerObject.transform.position = new Vector3(
-                                displacementUpdate.stateAfter.pos.x * referenceWidth,
-                                -displacementUpdate.stateAfter.pos.y * referenceWidth,
+                                displacementUpdate.stateAfter.pos.x * m_referenceWidth,
+                                -displacementUpdate.stateAfter.pos.y * m_referenceWidth,
                                 m_playerObject.transform.position.z);
 
                             Camera.main.transform.position = new Vector3(
@@ -223,11 +232,38 @@ namespace Hopper
                         if (displacementUpdate != null)
                         {
                             m_enemyObjects[i].transform.position = new Vector3(
-                                displacementUpdate.stateAfter.pos.x * referenceWidth,
-                                -displacementUpdate.stateAfter.pos.y * referenceWidth,
+                                displacementUpdate.stateAfter.pos.x * m_referenceWidth,
+                                -displacementUpdate.stateAfter.pos.y * m_referenceWidth,
                                 m_enemyObjects[i].transform.position.z);
                         }
                     }
+
+                    for (int j = enemies.Count; j < m_enemyObjects.Count; j++)
+                    {
+                        Destroy(m_enemyObjects[j]);
+                    }
+                    m_enemyObjects.RemoveRange(enemies.Count, m_enemyObjects.Count - enemies.Count);
+
+                    var dropped = m_world.m_state.Entities[Layer.DROPPED.ToIndex()];
+
+                    if (m_droppedItemsObjects.Count < dropped.Count)
+                    {
+                        var count = m_droppedItemsObjects.Count;
+
+                        for (int j = count; j < dropped.Count; j++)
+                        {
+                            var droppedItem = dropped[j];
+                            var pos = new Vector3(droppedItem.Pos.x * m_referenceWidth, -droppedItem.Pos.y * m_referenceWidth, -1);
+                            var instance = Instantiate(droppedItemPrefab, pos, Quaternion.identity);
+                            m_droppedItemsObjects.Add(instance);
+                        }
+                    }
+
+                    for (int j = dropped.Count; j < m_droppedItemsObjects.Count; j++)
+                    {
+                        Destroy(m_droppedItemsObjects[j]);
+                    }
+                    m_droppedItemsObjects.RemoveRange(dropped.Count, m_droppedItemsObjects.Count - dropped.Count);
 
                     if (LastInput != null)
                     {
@@ -238,6 +274,75 @@ namespace Hopper
                     }
                 }
             }
+        }
+        private EntityFactory<Player> CreatePlayerFactory()
+        {
+            var moveAction = new BehaviorAction<Moving>();
+            var digAction = new BehaviorAction<Digging>();
+            var attackAction = new BehaviorAction<Attacking>();
+            var interactAction = new SimpleAction(
+                (Entity actor, Action action) =>
+                {
+                    var target = actor.GetCellRelative(action.direction).GetEntityFromLayer(Layer.REAL);
+                    if (target == null) return false;
+                    var interactable = target.Behaviors.Get<Interactable>();
+                    if (interactable == null) return false;
+                    return interactable.Activate();
+                }
+            );
+
+            var defaultAction = new CompositeAction(
+                interactAction,
+                attackAction,
+                digAction,
+                moveAction
+            );
+
+            var playerFactory = Player.CreateFactory()
+                .AddBehavior<Controllable>(new Controllable.Config
+                {
+                    defaultAction = defaultAction
+                });
+
+            return playerFactory;
+        }
+
+        private void CreateItems()
+        {
+            var rightPiece = new Piece { dir = IntVector2.Right, pos = IntVector2.Right };
+
+            var shovelTargetProvider = new TargetProvider<DigTarget>(
+                new List<Piece>(1) { rightPiece },
+                Handlers.DigChain);
+
+            var knifeTargetProvider = new TargetProvider<AtkTarget>(
+                new List<Piece>(1) { rightPiece },
+                Handlers.GeneralChain);
+
+            m_shovelItem = new ModularTargetingItem(
+                Inventory.ShovelSlot,
+                shovelTargetProvider);
+
+            m_knifeItem = new ModularTargetingItem(
+                Inventory.WeaponSlot,
+                knifeTargetProvider);
+        }
+
+        private Generator CreateGenerator()
+        {
+            Generator generator = new Generator(50, 50, new Generator.Options
+            {
+                min_hallway_length = 2,
+                max_hallway_length = 5
+            });
+
+            generator.AddRoom(new IntVector2(5, 5));
+            generator.AddRoom(new IntVector2(5, 5));
+            // generator.AddRoom(new IntVector2(5, 5));
+            // generator.AddRoom(new IntVector2(5, 5));
+            // generator.AddRoom(new IntVector2(5, 5));
+            // generator.Generate();
+            return generator;
         }
     }
 }
