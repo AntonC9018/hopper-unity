@@ -7,6 +7,8 @@ using Core.Targeting;
 using System.Collections.Generic;
 using Core.Items;
 using System.Linq;
+using Core.Stats.Basic;
+using Test;
 
 namespace Hopper
 {
@@ -30,28 +32,18 @@ namespace Hopper
 
         private ISuperPool CreateItemPool()
         {
-            var poolDef = new PoolDefinition<NormalSubPool>();
-
             PoolItem[] items = new[]
             {
                 new PoolItem(m_knifeItem.Id, 1),
                 new PoolItem(m_shovelItem.Id, 1),
             };
-            poolDef.RegisterItems(items);
 
-            Pool zone1dir = new Pool();
-            SubPool weapons = new NormalSubPool();
-            SubPool shovels = new NormalSubPool();
+            var pool = Pool.CreateNormal<IItem>();
 
-            poolDef.m_baseDir.AddDirectory("zone1", zone1dir);
-            zone1dir.AddFile("weapons", new NormalSubPool());
-            zone1dir.AddFile("shovels", new NormalSubPool());
-            poolDef.AddItemToPool(items[0], "zone1/weapons");
-            poolDef.AddItemToPool(items[1], "zone1/shovels");
+            pool.Add("zone1/weapons", items[0]);
+            pool.Add("zone1/shovels", items[1]);
 
-            var superPool = new SuperPool<NormalSubPool>(poolDef);
-
-            return superPool;
+            return pool.Copy();
         }
 
         void Start()
