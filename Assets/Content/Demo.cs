@@ -27,8 +27,8 @@ namespace Hopper
         private List<GameObject> m_enemyObjects;
         private List<GameObject> m_droppedItemsObjects;
 
-        private ModularTargetingItem<DigTarget, DigTargetEvent> m_shovelItem;
-        private ModularTargetingItem<AtkTarget, AtkTargetEvent> m_knifeItem;
+        private ModularTargetingItem<DigTarget, Dig> m_shovelItem;
+        private ModularTargetingItem<AtkTarget, Attack> m_knifeItem;
 
         private ISuperPool CreateItemPool()
         {
