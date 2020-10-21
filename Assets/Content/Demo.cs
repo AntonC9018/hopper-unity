@@ -303,21 +303,25 @@ namespace Hopper
         {
             var rightPiece = new Piece { dir = IntVector2.Right, pos = IntVector2.Right };
 
-            var shovelTargetProvider = new TargetProvider<DigTarget>(
-                new List<Piece>(1) { rightPiece },
-                Handlers.DigChain);
+            var shovelTargetProvider = TargetProvider.CreateSimple(
+                new Pattern(rightPiece),
+                Handlers.DigChain
+            );
 
-            var knifeTargetProvider = new TargetProvider<AtkTarget>(
-                new List<Piece>(1) { rightPiece },
-                Handlers.GeneralChain);
+            var knifeTargetProvider = TargetProvider.CreateSimple(
+                new Pattern(rightPiece),
+                Handlers.GeneralChain
+            );
 
             m_shovelItem = new ModularTargetingItem(
                 Inventory.ShovelSlot,
-                shovelTargetProvider);
+                shovelTargetProvider
+            );
 
             m_knifeItem = new ModularTargetingItem(
                 Inventory.WeaponSlot,
-                knifeTargetProvider);
+                knifeTargetProvider
+            );
         }
 
         private Generator CreateGenerator()
