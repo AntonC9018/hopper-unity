@@ -27,8 +27,8 @@ namespace Hopper
         private List<GameObject> m_enemyObjects;
         private List<GameObject> m_droppedItemsObjects;
 
-        private ModularTargetingItem m_shovelItem;
-        private ModularTargetingItem m_knifeItem;
+        private ModularTargetingItem<DigTarget, DigTargetEvent> m_shovelItem;
+        private ModularTargetingItem<AtkTarget, AtkTargetEvent> m_knifeItem;
 
         private ISuperPool CreateItemPool()
         {
@@ -303,22 +303,22 @@ namespace Hopper
         {
             var rightPiece = new Piece { dir = IntVector2.Right, pos = IntVector2.Right };
 
-            var shovelTargetProvider = TargetProvider.CreateSimple(
+            var shovelTargetProvider = TargetProvider.CreateDig(
                 new Pattern(rightPiece),
                 Handlers.DigChain
             );
 
-            var knifeTargetProvider = TargetProvider.CreateSimple(
+            var knifeTargetProvider = TargetProvider.CreateAtk(
                 new Pattern(rightPiece),
                 Handlers.GeneralChain
             );
 
-            m_shovelItem = new ModularTargetingItem(
+            m_shovelItem = Item.CreateModularTargeting(
                 Inventory.ShovelSlot,
                 shovelTargetProvider
             );
 
-            m_knifeItem = new ModularTargetingItem(
+            m_knifeItem = Item.CreateModularTargeting(
                 Inventory.WeaponSlot,
                 knifeTargetProvider
             );
