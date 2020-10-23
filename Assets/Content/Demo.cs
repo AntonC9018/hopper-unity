@@ -36,12 +36,16 @@ namespace Hopper
             {
                 new PoolItem(m_knifeItem.Id, 1),
                 new PoolItem(m_shovelItem.Id, 1),
+                new PoolItem(Bombing.item.Id, 2),
+                new PoolItem(Bombing.item_x3.Id, 2)
             };
 
             var pool = Pool.CreateNormal<IItem>();
 
             pool.Add("zone1/weapons", items[0]);
             pool.Add("zone1/shovels", items[1]);
+            pool.Add("zone1/stuff", items[2]);
+            pool.Add("zone1/stuff", items[3]);
 
             return pool.Copy();
         }
@@ -76,7 +80,7 @@ namespace Hopper
                         {
                             type = ContentType.ITEM,
                             isAforeset = false,
-                            poolPath = "zone1/shovels"
+                            poolPath = "zone1/stuff"
                         }
                     }
                 );
@@ -122,6 +126,7 @@ namespace Hopper
             var center = generator.rooms[0].Center.Round();
 
             var player = m_world.SpawnPlayer(playerFactory, center);
+            player.Inventory.Equip(m_knifeItem);
 
             // player.Inventory.Equip(shovelItem);
             // player.Inventory.Equip(knifeItem);
@@ -194,8 +199,8 @@ namespace Hopper
 
                     player.Behaviors.Get<Acting>().NextAction = action;
                     // System.Console.WriteLine(player.Pos);
-                    if (m_world.m_state.m_numIters == 0)
-                        Explosion.Explode(player.Pos + IntVector2.Left, 1, m_world);
+                    // if (m_world.m_state.m_numIters == 0)
+                    //     Explosion.Explode(player.Pos + IntVector2.Left, 1, m_world);
                     // System.Console.WriteLine(player.Pos);
                     m_world.Loop();
                     // System.Console.WriteLine(player.Pos);
@@ -239,7 +244,10 @@ namespace Hopper
                     {
                         Destroy(m_enemyObjects[j]);
                     }
-                    m_enemyObjects.RemoveRange(enemies.Count, m_enemyObjects.Count - enemies.Count);
+                    if (m_enemyObjects.Count - enemies.Count > 0)
+                    {
+                        m_enemyObjects.RemoveRange(enemies.Count, m_enemyObjects.Count - enemies.Count);
+                    }
 
                     var dropped = m_world.m_state.Entities[Layer.DROPPED.ToIndex()];
 
@@ -260,7 +268,10 @@ namespace Hopper
                     {
                         Destroy(m_droppedItemsObjects[j]);
                     }
-                    m_droppedItemsObjects.RemoveRange(dropped.Count, m_droppedItemsObjects.Count - dropped.Count);
+                    if (m_droppedItemsObjects.Count - dropped.Count > 0)
+                    {
+                        m_droppedItemsObjects.RemoveRange(dropped.Count, m_droppedItemsObjects.Count - dropped.Count);
+                    }
 
                     if (LastInput != null)
                     {
@@ -325,6 +336,8 @@ namespace Hopper
                 Inventory.WeaponSlot,
                 knifeTargetProvider
             );
+
+
         }
 
         private Generator CreateGenerator()
