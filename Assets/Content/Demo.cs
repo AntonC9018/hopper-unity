@@ -193,8 +193,13 @@ namespace Hopper
                     }
 
                     player.Behaviors.Get<Acting>().NextAction = action;
-
+                    // System.Console.WriteLine(player.Pos);
+                    if (m_world.m_state.m_numIters == 0)
+                        Explosion.Explode(player.Pos + IntVector2.Left, 1, m_world);
+                    // System.Console.WriteLine(player.Pos);
                     m_world.Loop();
+                    // System.Console.WriteLine(player.Pos);
+
 
                     {
                         var displacementUpdate = player.History.FindLast(
@@ -275,7 +280,7 @@ namespace Hopper
             var interactAction = new SimpleAction(
                 (Entity actor, Action action) =>
                 {
-                    var target = actor.GetCellRelative(action.direction).GetEntityFromLayer(Layer.REAL);
+                    var target = actor.GetCellRelative(action.direction)?.GetEntityFromLayer(Layer.REAL);
                     if (target == null) return false;
                     var interactable = target.Behaviors.Get<Interactable>();
                     if (interactable == null) return false;
@@ -301,15 +306,13 @@ namespace Hopper
 
         private void CreateItems()
         {
-            var rightPiece = new Piece { dir = IntVector2.Right, pos = IntVector2.Right };
-
             var shovelTargetProvider = TargetProvider.CreateDig(
-                new Pattern(rightPiece),
+                Pattern.Default,
                 Handlers.DigChain
             );
 
             var knifeTargetProvider = TargetProvider.CreateAtk(
-                new Pattern(rightPiece),
+                Pattern.Default,
                 Handlers.GeneralChain
             );
 
@@ -326,14 +329,14 @@ namespace Hopper
 
         private Generator CreateGenerator()
         {
-            Generator generator = new Generator(50, 50, new Generator.Options
+            Generator generator = new Generator(11, 11, new Generator.Options
             {
                 min_hallway_length = 2,
                 max_hallway_length = 5
             });
 
-            generator.AddRoom(new IntVector2(5, 5));
-            generator.AddRoom(new IntVector2(5, 5));
+            generator.AddRoom(new IntVector2(10, 10));
+            // generator.AddRoom(new IntVector2(5, 5));
             // generator.AddRoom(new IntVector2(5, 5));
             // generator.AddRoom(new IntVector2(5, 5));
             // generator.AddRoom(new IntVector2(5, 5));
