@@ -260,6 +260,7 @@ MonoBehaviour:
     type: 3}
   droppedItemPrefab: {fileID: 7548362609548230737, guid: 98e701a9d20d41f45a73cafa6a9cc46c,
     type: 3}
+  candaceAnimationManager: {fileID: 1704049828}
 --- !u!114 &1704049828
 MonoBehaviour:
   m_ObjectHideFlags: 0
