@@ -9,6 +9,7 @@ using Core.Items;
 using System.Linq;
 using Core.Stats.Basic;
 using Test;
+using UnityEngine.Serialization;
 
 namespace Hopper
 {
@@ -21,6 +22,8 @@ namespace Hopper
         public GameObject chestPrefab;
         public GameObject droppedItemPrefab;
 
+        public CandaceAnimationManager candaceAnimationManager;
+        
         private World m_world;
         private GameObject m_playerObject;
         private float m_referenceWidth;
@@ -29,6 +32,7 @@ namespace Hopper
 
         private ModularTargetingItem<DigTarget, Dig> m_shovelItem;
         private ModularTargetingItem<AtkTarget, Attack> m_knifeItem;
+
 
         private ISuperPool CreateItemPool()
         {
@@ -91,6 +95,9 @@ namespace Hopper
             var generator = CreateGenerator();
             generator.Generate();
             m_world = new World(generator.grid.GetLength(1), generator.grid.GetLength(0));
+            
+            candaceAnimationManager.SetWorld(m_world); //
+            
 
             m_referenceWidth = playerPrefab.GetComponent<SpriteRenderer>().size.x;
             m_enemyObjects = new List<GameObject>();
@@ -135,6 +142,10 @@ namespace Hopper
                 playerPrefab,
                 new Vector3(center.x * m_referenceWidth, -center.y * m_referenceWidth, -1),
                 Quaternion.identity);
+            
+            candaceAnimationManager.SetPlayerAnimator(m_playerObject.GetComponent<Animator>());
+            
+            
 
             Camera.main.transform.position = new Vector3(
                 m_playerObject.transform.position.x,

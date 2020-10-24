@@ -214,6 +214,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1704049826}
   - component: {fileID: 1704049827}
+  - component: {fileID: 1704049828}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -259,3 +260,15 @@ MonoBehaviour:
     type: 3}
   droppedItemPrefab: {fileID: 7548362609548230737, guid: 98e701a9d20d41f45a73cafa6a9cc46c,
     type: 3}
+--- !u!114 &1704049828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1704049825}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95189457e66e54a4aa89945b5fa80151, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
