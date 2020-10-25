@@ -4,7 +4,6 @@ using Core.History;
 
 public class CandaceAnimationManager : MonoBehaviour    //WARNING: EXTREMELY ROUGH SCRIPT
 {
-
     private World _world = null;
     private Animator _playerAnimator = null;
 
