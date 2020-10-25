@@ -23,7 +23,7 @@ namespace Hopper
         public GameObject droppedItemPrefab;
 
         public CandaceAnimationManager candaceAnimationManager;
-        
+
         private World m_world;
         private GameObject m_playerObject;
         private float m_referenceWidth;
@@ -40,8 +40,8 @@ namespace Hopper
             {
                 new PoolItem(m_knifeItem.Id, 1),
                 new PoolItem(m_shovelItem.Id, 1),
-                new PoolItem(Bombing.item.Id, 2),
-                new PoolItem(Bombing.item_x3.Id, 2)
+                // new PoolItem(Bombing.item.Id, 1),
+                new PoolItem(Bombing.item_x3.Id, 20)
             };
 
             var pool = Pool.CreateNormal<IItem>();
@@ -49,7 +49,7 @@ namespace Hopper
             pool.Add("zone1/weapons", items[0]);
             pool.Add("zone1/shovels", items[1]);
             pool.Add("zone1/stuff", items[2]);
-            pool.Add("zone1/stuff", items[3]);
+            // pool.Add("zone1/stuff", items[3]);
 
             return pool.Copy();
         }
@@ -95,9 +95,9 @@ namespace Hopper
             var generator = CreateGenerator();
             generator.Generate();
             m_world = new World(generator.grid.GetLength(1), generator.grid.GetLength(0));
-            
+
             candaceAnimationManager.SetWorld(m_world); //
-            
+
 
             m_referenceWidth = playerPrefab.GetComponent<SpriteRenderer>().size.x;
             m_enemyObjects = new List<GameObject>();
@@ -142,10 +142,10 @@ namespace Hopper
                 playerPrefab,
                 new Vector3(center.x * m_referenceWidth, -center.y * m_referenceWidth, -1),
                 Quaternion.identity);
-            
+
             candaceAnimationManager.SetPlayerAnimator(m_playerObject.GetComponent<Animator>());
-            
-            
+
+
 
             Camera.main.transform.position = new Vector3(
                 m_playerObject.transform.position.x,
@@ -251,14 +251,14 @@ namespace Hopper
                         }
                     }
 
-                    for (int j = enemies.Count; j < m_enemyObjects.Count; j++)
-                    {
-                        Destroy(m_enemyObjects[j]);
-                    }
-                    if (m_enemyObjects.Count - enemies.Count > 0)
-                    {
-                        m_enemyObjects.RemoveRange(enemies.Count, m_enemyObjects.Count - enemies.Count);
-                    }
+                    // for (int j = enemies.Count; j < m_enemyObjects.Count; j++)
+                    // {
+                    //     Destroy(m_enemyObjects[j]);
+                    // }
+                    // if (m_enemyObjects.Count - enemies.Count > 0)
+                    // {
+                    //     m_enemyObjects.RemoveRange(enemies.Count, m_enemyObjects.Count - enemies.Count);
+                    // }
 
                     var dropped = m_world.m_state.Entities[Layer.DROPPED.ToIndex()];
 

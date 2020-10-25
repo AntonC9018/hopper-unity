@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5220043425541561744
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5220043425541561747}
+  - component: {fileID: 5220043425541561746}
+  - component: {fileID: 5220043425541561749}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5220043425541561747
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5220043425541561744}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 20}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5220043425541561746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5220043425541561744}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7049f586b821e094fbee3b60347e884d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerPrefab: {fileID: 950320283363426560, guid: bb1df3d66e47e8c4d8cf63032db95d8b,
+    type: 3}
+  enemyPrefab: {fileID: 7249867049834488878, guid: c73572cbf00bead4389072e435f840db,
+    type: 3}
+  wallPrefab: {fileID: 1666979532132274622, guid: 6eec5e162731b874aa86d998139cbef6,
+    type: 3}
+  tilePrefab: {fileID: 8718207446532856479, guid: d3796620904b663459420a404134a98a,
+    type: 3}
+  chestPrefab: {fileID: 1190183502332052718, guid: 1dbfc8f4d5cb0cf488674f831495feeb,
+    type: 3}
+  droppedItemPrefab: {fileID: 7548362609548230737, guid: 98e701a9d20d41f45a73cafa6a9cc46c,
+    type: 3}
+  candaceAnimationManager: {fileID: 5220043425541561749}
+--- !u!114 &5220043425541561749
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5220043425541561744}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95189457e66e54a4aa89945b5fa80151, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
