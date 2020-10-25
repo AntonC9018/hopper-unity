@@ -9,7 +9,7 @@ using Core.Items;
 using System.Linq;
 using Core.Stats.Basic;
 using Test;
-using UnityEngine.Serialization;
+using Core.History;
 
 namespace Hopper
 {
@@ -22,7 +22,7 @@ namespace Hopper
         public GameObject chestPrefab;
         public GameObject droppedItemPrefab;
 
-        public CandaceAnimationManager candaceAnimationManager;
+        private CandaceAnimationManager m_candaceAnimationManager;
 
         private World m_world;
         private GameObject m_playerObject;
@@ -57,6 +57,8 @@ namespace Hopper
         void Start()
         {
             Utils.UnitySystemConsoleRedirector.Redirect();
+
+            m_candaceAnimationManager = GetComponent<CandaceAnimationManager>();
 
             CreateItems();
 
@@ -96,7 +98,7 @@ namespace Hopper
             generator.Generate();
             m_world = new World(generator.grid.GetLength(1), generator.grid.GetLength(0));
 
-            candaceAnimationManager.SetWorld(m_world); //
+            m_candaceAnimationManager.SetWorld(m_world); //
 
 
             m_referenceWidth = playerPrefab.GetComponent<SpriteRenderer>().size.x;
@@ -143,7 +145,7 @@ namespace Hopper
                 new Vector3(center.x * m_referenceWidth, -center.y * m_referenceWidth, -1),
                 Quaternion.identity);
 
-            candaceAnimationManager.SetPlayerAnimator(m_playerObject.GetComponent<Animator>());
+            m_candaceAnimationManager.SetPlayerAnimator(m_playerObject.GetComponent<Animator>());
 
 
 
@@ -218,8 +220,8 @@ namespace Hopper
 
 
                     {
-                        var displacementUpdate = player.History.FindLast(
-                           update => update.updateCode == History.UpdateCode.displaced_do);
+                        var displacementUpdate = player.History.Updates.FindLast(
+                           update => update.updateCode == UpdateCode.displaced_do);
 
                         if (displacementUpdate != null)
                         {
@@ -239,8 +241,8 @@ namespace Hopper
 
                     for (int i = 0; i < enemies.Count; i++)
                     {
-                        var displacementUpdate = enemies[i].History.FindLast(
-                            update => update.updateCode == History.UpdateCode.displaced_do);
+                        var displacementUpdate = enemies[i].History.Updates.FindLast(
+                            update => update.updateCode == UpdateCode.displaced_do);
 
                         if (displacementUpdate != null)
                         {
