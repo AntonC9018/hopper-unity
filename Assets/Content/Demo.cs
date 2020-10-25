@@ -30,8 +30,8 @@ namespace Hopper
         private List<GameObject> m_enemyObjects;
         private List<GameObject> m_droppedItemsObjects;
 
-        private ModularTargetingItem<DigTarget, Dig> m_shovelItem;
-        private ModularTargetingItem<AtkTarget, Attack> m_knifeItem;
+        private ModularShovel m_shovelItem;
+        private ModularWeapon m_knifeItem;
 
 
         private ISuperPool CreateItemPool()
@@ -340,17 +340,15 @@ namespace Hopper
                 Handlers.GeneralChain
             );
 
-            m_shovelItem = Item.CreateModularTargeting(
+            m_shovelItem = new ModularShovel(
                 Inventory.ShovelSlot,
                 shovelTargetProvider
             );
 
-            m_knifeItem = Item.CreateModularTargeting(
+            m_knifeItem = new ModularWeapon(
                 Inventory.WeaponSlot,
                 knifeTargetProvider
             );
-
-
         }
 
         private Generator CreateGenerator()
