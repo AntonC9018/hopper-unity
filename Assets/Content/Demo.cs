@@ -23,6 +23,8 @@ namespace Hopper
         public GameObject tilePrefab;
         public GameObject chestPrefab;
         public GameObject droppedItemPrefab;
+        public GameObject bombPrefab;
+        public GameObject explosionPrefab;
 
         private CandaceAnimationManager m_candaceAnimationManager;
 
@@ -97,13 +99,17 @@ namespace Hopper
             m_world = new World(generator.grid.GetLength(1), generator.grid.GetLength(0));
 
             m_viewModel = new View_Model(new Scent(Camera.main.gameObject));
-            m_viewModel.SetDefaultPrefab(new Prefab(tilePrefab));
-            m_viewModel.SetPrefabForFactory(playerFactory.Id, new Prefab(playerPrefab));
-            m_viewModel.SetPrefabForFactory(enemyFactory.Id, new Prefab(enemyPrefab));
-            m_viewModel.SetPrefabForFactory(wallFactory.Id, new Prefab(wallPrefab));
-            m_viewModel.SetPrefabForFactory(chestFactory.Id, new Prefab(chestPrefab));
-            m_viewModel.SetPrefabForFactory(DroppedItem.Factory.Id, new Prefab(droppedItemPrefab));
-            m_viewModel.WatchWorld(m_world);
+            m_viewModel.SetDefaultPrefab(new Prefab<Scent>(tilePrefab));
+            m_viewModel.SetPrefabForFactory(playerFactory.Id, new Prefab<Scent>(playerPrefab));
+            m_viewModel.SetPrefabForFactory(enemyFactory.Id, new Prefab<Scent>(enemyPrefab));
+            m_viewModel.SetPrefabForFactory(wallFactory.Id, new Prefab<Scent>(wallPrefab));
+            m_viewModel.SetPrefabForFactory(chestFactory.Id, new Prefab<Scent>(chestPrefab));
+            m_viewModel.SetPrefabForFactory(BombEntity.Factory.Id, new Prefab<Scent>(bombPrefab));
+            m_viewModel.SetPrefabForFactory(DroppedItem.Factory.Id, new Prefab<Scent>(droppedItemPrefab));
+
+            var explosionWatcher = new ExplosionWatcher(explosionPrefab);
+            m_viewModel.WatchWorld(m_world, explosionWatcher);
+
             Reference.Width = playerPrefab.GetComponent<SpriteRenderer>().size.x;
 
             // m_candaceAnimationManager.SetWorld(m_world);

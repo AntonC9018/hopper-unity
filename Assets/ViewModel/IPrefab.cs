@@ -2,8 +2,8 @@ using Utils.Vector;
 
 namespace Hopper.ViewModel
 {
-    public interface IPrefab
+    public interface IPrefab<out T> where T : IScent
     {
-        IScent Instantiate(IntVector2 pos, IntVector2 orientation);
+        T Instantiate(IntVector2 pos, IntVector2 orientation);
     }
 }

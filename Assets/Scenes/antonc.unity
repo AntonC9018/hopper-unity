@@ -202,6 +202,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: GameObject
       objectReference: {fileID: 0}
+    - target: {fileID: 5220043425541561746, guid: 3fed377abcf18324f8ec7c51dbf51ec0,
+        type: 3}
+      propertyPath: explosionPrefab
+      value: 
+      objectReference: {fileID: 3742176155140351328, guid: e7460bfa61d4ee14bae194dd629bb83c,
+        type: 3}
+    - target: {fileID: 5220043425541561746, guid: 3fed377abcf18324f8ec7c51dbf51ec0,
+        type: 3}
+      propertyPath: bombPrefab
+      value: 
+      objectReference: {fileID: 2940573717791803815, guid: 0d220a6e6e0e26b4fb3fb0916c9931fd,
+        type: 3}
     - target: {fileID: 5220043425541561747, guid: 3fed377abcf18324f8ec7c51dbf51ec0,
         type: 3}
       propertyPath: m_LocalPosition.x

@@ -9,33 +9,37 @@ namespace Hopper.ViewModel
 {
     public class View_Model
     {
-        private Dictionary<int, IPrefab> m_factoryIdPrefabMap;
+        private Dictionary<int, IPrefab<IScent>> m_factoryIdPrefabMap;
         private Dictionary<Logent, IScent> m_activeScentsMap;
         private List<Logent> m_players;
-        private IPrefab m_defaultPrefab;
+        private IPrefab<IScent> m_defaultPrefab;
         private ICamera m_camera;
 
         public View_Model(ICamera camera)
         {
-            m_factoryIdPrefabMap = new Dictionary<int, IPrefab>();
+            m_factoryIdPrefabMap = new Dictionary<int, IPrefab<IScent>>();
             m_activeScentsMap = new Dictionary<Logent, IScent>();
             m_players = new List<Logent>();
             m_camera = camera;
         }
 
-        public void WatchWorld(World world)
+        public void WatchWorld(World world, params IWatcher[] customWatchers)
         {
-            world.SpawnEvent += AddScentForLogent;
+            world.SpawnEntityEvent += AddScentForLogent;
             world.m_state.EndOfLoopEvent += Update;
+            foreach (var customWatcher in customWatchers)
+            {
+                customWatcher.Watch(world, this);
+            }
         }
 
         // factory is, in essence, the entity type
-        public void SetPrefabForFactory(int factoryId, IPrefab prefab)
+        public void SetPrefabForFactory(int factoryId, IPrefab<IScent> prefab)
         {
             m_factoryIdPrefabMap[factoryId] = prefab;
         }
 
-        public void SetDefaultPrefab(IPrefab prefab)
+        public void SetDefaultPrefab(IPrefab<IScent> prefab)
         {
             m_defaultPrefab = prefab;
         }
@@ -43,7 +47,7 @@ namespace Hopper.ViewModel
         public void AddScentForLogent(Logent logent)
         {
             var factoryId = logent.GetFactoryId();
-            IPrefab prefab = m_factoryIdPrefabMap.ContainsKey(factoryId)
+            IPrefab<IScent> prefab = m_factoryIdPrefabMap.ContainsKey(factoryId)
                 ? m_factoryIdPrefabMap[factoryId]
                 : m_defaultPrefab;
             IScent scent = prefab.Instantiate(logent.Pos, logent.Orientation);
