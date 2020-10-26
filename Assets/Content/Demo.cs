@@ -108,7 +108,8 @@ namespace Hopper
             m_viewModel.SetPrefabForFactory(DroppedItem.Factory.Id, new Prefab<Scent>(droppedItemPrefab));
 
             var explosionWatcher = new ExplosionWatcher(explosionPrefab);
-            m_viewModel.WatchWorld(m_world, explosionWatcher);
+            var tileWatcher = new TileWatcher(new Prefab<Scent>(tilePrefab));
+            m_viewModel.WatchWorld(m_world, explosionWatcher, tileWatcher);
 
             Reference.Width = playerPrefab.GetComponent<SpriteRenderer>().size.x;
 
@@ -120,22 +121,12 @@ namespace Hopper
                 {
                     if (generator.grid[x, y] != Generator.Mark.EMPTY)
                     {
-                        // TODO: abstract these non-logic entities and manage them in viewmodel
-                        // var position = new Vector3(x * Reference.Width, -y * Reference.Width, 0);
-                        // var instance = Instantiate(tilePrefab, position, Quaternion.identity);
+                        TileStuff.FireCreatedEvent(new IntVector2(x, y));
 
                         if (generator.grid[x, y] == Generator.Mark.WALL)
                         {
                             m_world.SpawnEntity(wallFactory, new IntVector2(x, y));
                         }
-                        // just for demo
-                        // else if (Random.value > 0.9)
-                        // {
-                        //     position = new Vector3(x * referenceWidth, -y * referenceWidth, -1);
-                        //     instance = Instantiate(enemyPrefab, position, Quaternion.identity);
-                        //     m_world.SpawnEntity(enemyFactory, new IntVector2(x, y));
-                        //     m_enemyObjects.Add(instance);
-                        // }
                     }
                 }
             }

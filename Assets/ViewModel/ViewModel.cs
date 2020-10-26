@@ -98,20 +98,12 @@ namespace Hopper.ViewModel
         {
             var history = logent.History;
 
-            var moveUpdate = history.Updates.FindLast(
-                e => e.updateCode == UpdateCode.move_do
+            var latestChangePosUpdate = history.Updates.FindLast(
+                e => e.updateCode == UpdateCode.move_do || e.updateCode == UpdateCode.displaced_do
             );
-            if (moveUpdate != null)
+            if (latestChangePosUpdate != null)
             {
-                return moveUpdate.stateAfter;
-            }
-
-            var displacementUpdate = history.Updates.FindLast(
-                e => e.updateCode == UpdateCode.displaced_do
-            );
-            if (displacementUpdate != null)
-            {
-                return displacementUpdate.stateAfter;
+                return latestChangePosUpdate.stateAfter;
             }
 
             return new EntityState(logent);
