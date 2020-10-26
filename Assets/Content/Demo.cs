@@ -10,6 +10,8 @@ using System.Linq;
 using Core.Utils;
 using Test;
 using Core.History;
+using Hopper.ViewModel;
+using Hopper.View;
 
 namespace Hopper
 {
@@ -25,13 +27,9 @@ namespace Hopper
         private CandaceAnimationManager m_candaceAnimationManager;
 
         private World m_world;
-        private GameObject m_playerObject;
-        private float m_referenceWidth;
-        private List<GameObject> m_enemyObjects;
-        private List<GameObject> m_droppedItemsObjects;
-
         private ModularShovel m_shovelItem;
         private ModularWeapon m_knifeItem;
+        private View_Model m_viewModel;
 
 
         private ISuperPool CreateItemPool()
@@ -58,7 +56,7 @@ namespace Hopper
         {
             Utils.UnitySystemConsoleRedirector.Redirect();
 
-            m_candaceAnimationManager = GetComponent<CandaceAnimationManager>();
+            // m_candaceAnimationManager = GetComponent<CandaceAnimationManager>();
 
             CreateItems();
 
@@ -98,12 +96,17 @@ namespace Hopper
             generator.Generate();
             m_world = new World(generator.grid.GetLength(1), generator.grid.GetLength(0));
 
-            m_candaceAnimationManager.SetWorld(m_world); //
+            m_viewModel = new View_Model(new Scent(Camera.main.gameObject));
+            m_viewModel.SetDefaultPrefab(new Prefab(tilePrefab));
+            m_viewModel.SetPrefabForFactory(playerFactory.Id, new Prefab(playerPrefab));
+            m_viewModel.SetPrefabForFactory(enemyFactory.Id, new Prefab(enemyPrefab));
+            m_viewModel.SetPrefabForFactory(wallFactory.Id, new Prefab(wallPrefab));
+            m_viewModel.SetPrefabForFactory(chestFactory.Id, new Prefab(chestPrefab));
+            m_viewModel.SetPrefabForFactory(DroppedItem.Factory.Id, new Prefab(droppedItemPrefab));
+            m_viewModel.WatchWorld(m_world);
+            Reference.Width = playerPrefab.GetComponent<SpriteRenderer>().size.x;
 
-
-            m_referenceWidth = playerPrefab.GetComponent<SpriteRenderer>().size.x;
-            m_enemyObjects = new List<GameObject>();
-            m_droppedItemsObjects = new List<GameObject>();
+            // m_candaceAnimationManager.SetWorld(m_world);
 
             for (int y = 0; y < generator.grid.GetLength(1); y++)
             {
@@ -111,13 +114,12 @@ namespace Hopper
                 {
                     if (generator.grid[x, y] != Generator.Mark.EMPTY)
                     {
-                        var position = new Vector3(x * m_referenceWidth, -y * m_referenceWidth, 0);
-                        var instance = Instantiate(tilePrefab, position, Quaternion.identity);
+                        // TODO: abstract these non-logic entities and manage them in viewmodel
+                        // var position = new Vector3(x * Reference.Width, -y * Reference.Width, 0);
+                        // var instance = Instantiate(tilePrefab, position, Quaternion.identity);
 
                         if (generator.grid[x, y] == Generator.Mark.WALL)
                         {
-                            position = new Vector3(x * m_referenceWidth, -y * m_referenceWidth, -1);
-                            instance = Instantiate(wallPrefab, position, Quaternion.identity);
                             m_world.SpawnEntity(wallFactory, new IntVector2(x, y));
                         }
                         // just for demo
@@ -136,35 +138,10 @@ namespace Hopper
 
             var player = m_world.SpawnPlayer(playerFactory, center);
             player.Inventory.Equip(m_knifeItem);
-
             // player.Inventory.Equip(shovelItem);
             // player.Inventory.Equip(knifeItem);
 
-            m_playerObject = Instantiate(
-                playerPrefab,
-                new Vector3(center.x * m_referenceWidth, -center.y * m_referenceWidth, -1),
-                Quaternion.identity);
-
-            m_candaceAnimationManager.SetPlayerAnimator(m_playerObject.GetComponent<Animator>());
-
-
-
-            Camera.main.transform.position = new Vector3(
-                m_playerObject.transform.position.x,
-                m_playerObject.transform.position.y,
-                Camera.main.transform.position.z);
-
-            {
-                var pos = new Vector3(
-                    (center.x + 1) * m_referenceWidth,
-                    -(center.y + 1) * m_referenceWidth,
-                    -1);
-                var ins = Instantiate(chestPrefab, pos, Quaternion.identity);
-                m_world.SpawnEntity(
-                    chestFactory,
-                    new IntVector2(center.x + 1, center.y + 1));
-                m_enemyObjects.Add(ins);
-            }
+            m_world.SpawnEntity(chestFactory, new IntVector2(center.x + 1, center.y + 1));
         }
 
         private UnityEngine.KeyCode? LastInput = null;
@@ -211,80 +188,7 @@ namespace Hopper
                     }
 
                     player.Behaviors.Get<Acting>().NextAction = action;
-                    // System.Console.WriteLine(player.Pos);
-                    // if (m_world.m_state.m_numIters == 0)
-                    //     Explosion.Explode(player.Pos + IntVector2.Left, 1, m_world);
-                    // System.Console.WriteLine(player.Pos);
                     m_world.Loop();
-                    // System.Console.WriteLine(player.Pos);
-
-
-                    {
-                        var displacementUpdate = player.History.Updates.FindLast(
-                           update => update.updateCode == UpdateCode.displaced_do);
-
-                        if (displacementUpdate != null)
-                        {
-                            m_playerObject.transform.position = new Vector3(
-                                displacementUpdate.stateAfter.pos.x * m_referenceWidth,
-                                -displacementUpdate.stateAfter.pos.y * m_referenceWidth,
-                                m_playerObject.transform.position.z);
-
-                            Camera.main.transform.position = new Vector3(
-                                m_playerObject.transform.position.x,
-                                m_playerObject.transform.position.y,
-                                Camera.main.transform.position.z);
-                        }
-                    }
-
-                    var enemies = m_world.m_state.Entities[Layer.REAL.ToIndex()];
-
-                    for (int i = 0; i < enemies.Count; i++)
-                    {
-                        var displacementUpdate = enemies[i].History.Updates.FindLast(
-                            update => update.updateCode == UpdateCode.displaced_do);
-
-                        if (displacementUpdate != null)
-                        {
-                            m_enemyObjects[i].transform.position = new Vector3(
-                                displacementUpdate.stateAfter.pos.x * m_referenceWidth,
-                                -displacementUpdate.stateAfter.pos.y * m_referenceWidth,
-                                m_enemyObjects[i].transform.position.z);
-                        }
-                    }
-
-                    // for (int j = enemies.Count; j < m_enemyObjects.Count; j++)
-                    // {
-                    //     Destroy(m_enemyObjects[j]);
-                    // }
-                    // if (m_enemyObjects.Count - enemies.Count > 0)
-                    // {
-                    //     m_enemyObjects.RemoveRange(enemies.Count, m_enemyObjects.Count - enemies.Count);
-                    // }
-
-                    var dropped = m_world.m_state.Entities[Layer.DROPPED.ToIndex()];
-
-                    if (m_droppedItemsObjects.Count < dropped.Count)
-                    {
-                        var count = m_droppedItemsObjects.Count;
-
-                        for (int j = count; j < dropped.Count; j++)
-                        {
-                            var droppedItem = dropped[j];
-                            var pos = new Vector3(droppedItem.Pos.x * m_referenceWidth, -droppedItem.Pos.y * m_referenceWidth, -1);
-                            var instance = Instantiate(droppedItemPrefab, pos, Quaternion.identity);
-                            m_droppedItemsObjects.Add(instance);
-                        }
-                    }
-
-                    for (int j = dropped.Count; j < m_droppedItemsObjects.Count; j++)
-                    {
-                        Destroy(m_droppedItemsObjects[j]);
-                    }
-                    if (m_droppedItemsObjects.Count - dropped.Count > 0)
-                    {
-                        m_droppedItemsObjects.RemoveRange(dropped.Count, m_droppedItemsObjects.Count - dropped.Count);
-                    }
 
                     if (LastInput != null)
                     {
