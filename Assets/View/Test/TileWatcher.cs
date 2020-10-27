@@ -4,7 +4,7 @@ using Core;
 using Hopper.ViewModel;
 using Test;
 using UnityEngine;
-using Utils.Vector;
+using Core.Utils.Vector;
 
 namespace Hopper.View
 {

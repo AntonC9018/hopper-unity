@@ -1,9 +1,9 @@
-using Utils.Vector;
+using Core.Utils.Vector;
 
 namespace Hopper.ViewModel
 {
     public interface ICamera
     {
-        void ChangePos(IntVector2 pos);
+        void ChangePos(Vector2 pos);
     }
 }

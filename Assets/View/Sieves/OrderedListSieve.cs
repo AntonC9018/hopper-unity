@@ -2,32 +2,35 @@ using System.Collections.Generic;
 using Core.History;
 using Hopper.ViewModel;
 using UnityEngine;
-using Utils.Vector;
+using Core.Utils.Vector;
 
 namespace Hopper.View
 {
-    public class OrderedListSieve : ISieve
+    public class OrderedListSieve : IViewSieve
     {
         public int Weight { get; private set; }
         public bool IsFull => m_remainingCodes.Count == 0;
+        public AnimationCode AnimationCode { get; private set; }
 
         private UpdateCode[] m_codes;
         private Queue<UpdateCode> m_remainingCodes;
 
-        public OrderedListSieve(params UpdateCode[] codes)
+        public OrderedListSieve(AnimationCode animationCode, params UpdateCode[] codes)
         {
             m_codes = codes;
             m_remainingCodes = new Queue<UpdateCode>();
             Reset();
             Weight = codes.Length;
+            AnimationCode = animationCode;
         }
 
-        public OrderedListSieve(int weight, params UpdateCode[] codes)
+        public OrderedListSieve(AnimationCode animationCode, int weight, params UpdateCode[] codes)
         {
             m_codes = codes;
             m_remainingCodes = new Queue<UpdateCode>();
             Reset();
             Weight = weight;
+            AnimationCode = animationCode;
         }
 
         public void Reset()

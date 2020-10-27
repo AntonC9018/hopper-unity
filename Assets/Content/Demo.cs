@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Core;
 using Core.Generation;
-using Utils.Vector;
+using Core.Utils.Vector;
 using Core.Behaviors;
 using Core.Targeting;
 using System.Collections.Generic;
@@ -27,7 +27,6 @@ namespace Hopper
         public GameObject explosionPrefab;
 
         private CandaceAnimationManager m_candaceAnimationManager;
-
         private World m_world;
         private ModularShovel m_shovelItem;
         private ModularWeapon m_knifeItem;
@@ -56,7 +55,7 @@ namespace Hopper
 
         void Start()
         {
-            Utils.UnitySystemConsoleRedirector.Redirect();
+            Core.Utils.UnitySystemConsoleRedirector.Redirect();
 
             // m_candaceAnimationManager = GetComponent<CandaceAnimationManager>();
 
@@ -98,14 +97,18 @@ namespace Hopper
             generator.Generate();
             m_world = new World(generator.grid.GetLength(1), generator.grid.GetLength(0));
 
-            m_viewModel = new View_Model(new SceneEnt(Camera.main.gameObject));
-            m_viewModel.SetDefaultPrefab(new Prefab<SceneEnt>(tilePrefab));
-            m_viewModel.SetPrefabForFactory(playerFactory.Id, new Prefab<SceneEnt>(playerPrefab));
-            m_viewModel.SetPrefabForFactory(enemyFactory.Id, new Prefab<SceneEnt>(enemyPrefab));
-            m_viewModel.SetPrefabForFactory(wallFactory.Id, new Prefab<SceneEnt>(wallPrefab));
-            m_viewModel.SetPrefabForFactory(chestFactory.Id, new Prefab<SceneEnt>(chestPrefab));
-            m_viewModel.SetPrefabForFactory(BombEntity.Factory.Id, new Prefab<SceneEnt>(bombPrefab));
-            m_viewModel.SetPrefabForFactory(DroppedItem.Factory.Id, new Prefab<SceneEnt>(droppedItemPrefab));
+            var defaultSieve = new SimpleSieve(AnimationCode.Destroy, UpdateCode.dead);
+
+            View.Timer timer = GetComponent<View.Timer>();
+            var animator = new ViewAnimator(new SceneEnt(Camera.main.gameObject), timer);
+            m_viewModel = new View_Model(animator);
+            m_viewModel.SetDefaultPrefab(new Prefab<SceneEnt>(tilePrefab, defaultSieve));
+            m_viewModel.SetPrefabForFactory(playerFactory.Id, new Prefab<SceneEnt>(playerPrefab, defaultSieve));
+            m_viewModel.SetPrefabForFactory(enemyFactory.Id, new Prefab<SceneEnt>(enemyPrefab, defaultSieve));
+            m_viewModel.SetPrefabForFactory(wallFactory.Id, new Prefab<SceneEnt>(wallPrefab, defaultSieve));
+            m_viewModel.SetPrefabForFactory(chestFactory.Id, new Prefab<SceneEnt>(chestPrefab, defaultSieve));
+            m_viewModel.SetPrefabForFactory(BombEntity.Factory.Id, new Prefab<SceneEnt>(bombPrefab, defaultSieve));
+            m_viewModel.SetPrefabForFactory(DroppedItem.Factory.Id, new Prefab<SceneEnt>(droppedItemPrefab, defaultSieve));
 
             var explosionWatcher = new ExplosionWatcher(explosionPrefab);
             var tileWatcher = new TileWatcher(new Prefab<SceneEnt>(tilePrefab));

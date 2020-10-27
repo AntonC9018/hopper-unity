@@ -10,7 +10,7 @@ using UnityEngine;
 /// <author>
 /// Jackson Dunstan, http://jacksondunstan.com/articles/2986
 /// </author>
-namespace Utils
+namespace Core.Utils
 {
     public static class UnitySystemConsoleRedirector
     {

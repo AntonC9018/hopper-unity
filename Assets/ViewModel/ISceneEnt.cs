@@ -1,14 +1,14 @@
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using Utils.Vector;
+using Core.Utils.Vector;
 
 namespace Hopper.ViewModel
 {
     public interface ISceneEnt
     {
-        ReadOnlyCollection<ISieve> Sieves { get; }
-        void Destroy();
-        void ChangePos(IntVector2 pos);
+        IReadOnlyList<ISieve> Sieves { get; }
+        // void Destroy();
+        void Update(Core.History.EntityState finalState, ISieve sieve, AnimationInfo animationInfo);
+        void ChangePos(Vector2 pos);
         void ChangeOrientation(IntVector2 orientation);
     }
 }
