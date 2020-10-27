@@ -98,13 +98,14 @@ namespace Hopper.ViewModel
                 + m_prevCamPos);
 
 
-            if (StopTheTimerIfPastLastPhase(millis))
+            if (IsPastLastPhase(millis))
             {
+                m_timer.Stop();
                 m_prevCamPos = m_currentCameraData[m_currentPhase];
             }
             else
             {
-                TryAdvancePhase(millis);
+                m_firstTimeThisPhase = TryAdvancePhase(millis);
             }
         }
 
@@ -113,28 +114,23 @@ namespace Hopper.ViewModel
             return ((float)millis) / m_phaseSpanMillis[m_currentPhase];
         }
 
-        private void TryAdvancePhase(int millis)
+        private bool TryAdvancePhase(int millis)
         {
-            m_firstTimeThisPhase = false;
-            while (m_currentPhase < World.NumPhases - 1
+            if (m_currentPhase < World.NumPhases - 1
                 && m_phaseSpanMillis[m_currentPhase] < millis)
             {
                 millis -= m_phaseSpanMillis[m_currentPhase];
                 m_currentPhase++;
                 m_timer.Reset();
-                m_firstTimeThisPhase = true;
-            }
-        }
-
-        private bool StopTheTimerIfPastLastPhase(int millis)
-        {
-            if (m_currentPhase == World.NumPhases - 1
-                && millis > m_phaseSpanMillis[m_currentPhase])
-            {
-                m_timer.Stop();
                 return true;
             }
             return false;
+        }
+
+        private bool IsPastLastPhase(int millis)
+        {
+            return m_currentPhase == World.NumPhases - 1
+                && millis > m_phaseSpanMillis[m_currentPhase];
         }
     }
 }

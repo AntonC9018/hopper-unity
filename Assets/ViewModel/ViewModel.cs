@@ -1,11 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Core;
 using Core.Utils;
 using Core.History;
 using Core.Utils.Vector;
-using LogicEnt = Core.Entity;           // logent = logical entity
+using LogicEnt = Core.Entity;  // LogicEnt = Logent = Logical Entity
 
 namespace Hopper.ViewModel
 {
@@ -15,7 +14,7 @@ namespace Hopper.ViewModel
         private Dictionary<LogicEnt, ISceneEnt> m_activeScentsMap;
         private List<LogicEnt> m_players;
         private IPrefab<ISceneEnt> m_defaultPrefab;
-        private IAnimator m_animator;
+        private IAnimator m_animator; // not really an animator
         private Dictionary<LogicEnt, EntityState> m_prevStates;
 
         public View_Model(IAnimator animator)
@@ -23,7 +22,12 @@ namespace Hopper.ViewModel
             m_factoryIdPrefabMap = new Dictionary<int, IPrefab<ISceneEnt>>();
             m_activeScentsMap = new Dictionary<LogicEnt, ISceneEnt>();
             m_players = new List<LogicEnt>();
+
+            // This one is absolutely hideous
             m_prevStates = new Dictionary<LogicEnt, EntityState>();
+
+            // The contract between these two `managers` (their duties) should
+            // be outlined more explicitly (currently heck knows where's the line between them)
             m_animator = animator;
         }
 
@@ -33,6 +37,9 @@ namespace Hopper.ViewModel
             world.m_state.EndOfLoopEvent += Update;
             foreach (var customWatcher in customWatchers)
             {
+                // TODO: These events should prefferably be directly associated with the world
+                // this would remove constant checks to see if the world is right
+                // which are a hassle.
                 customWatcher.Watch(world, this);
             }
         }
@@ -50,7 +57,13 @@ namespace Hopper.ViewModel
 
         private void AddScentForLogent(LogicEnt logent)
         {
+            // TODO: spawn it on the screen at the exact timeframe (or phase) 
+            // the easiest way to implement this would be through the sieves
+            // which would unhide the entity, but then we need an extra phase for that
+            // So this one's an open question
             var factoryId = logent.GetFactoryId();
+
+            // TODO: this should be a separate method
             IPrefab<ISceneEnt> prefab = m_factoryIdPrefabMap.ContainsKey(factoryId)
                 ? m_factoryIdPrefabMap[factoryId]
                 : m_defaultPrefab;
@@ -62,6 +75,10 @@ namespace Hopper.ViewModel
             if (logent.IsPlayer)
             {
                 m_players.Add(logent);
+                // This is also probably pretty meh, since this should probably only 
+                // be called at the frame before the first frame that this ViewModel
+                // exists. There should also be the ability to bring it into that state without unsubbing from
+                // the world.
                 if (m_players.Count == 1)
                 {
                     m_animator.SetupCamera(GetCenterBetweenPlayers());
@@ -71,7 +88,10 @@ namespace Hopper.ViewModel
 
         private void Update()
         {
+            // TODO: this is too low level, refactor
             var logentsToRemove = new List<LogicEnt>();
+
+            // TODO: rethink what is done where
             var cameraData = CreateCameraDataArray();
             var historyData = new List<HistoryData>();
 
@@ -89,6 +109,8 @@ namespace Hopper.ViewModel
 
                 if (logent.IsPlayer)
                 {
+                    // TODO: too low level, too much code
+                    // this needs to be a separate class, ideally
                     AccumulateStates(cameraData, newData.states);
                 }
                 if (logent.IsDead)
@@ -107,9 +129,9 @@ namespace Hopper.ViewModel
             m_animator.Animate(historyData, cameraData);
         }
 
-        private IntVector2 GetCenterBetweenPlayers()
+        private Vector2 GetCenterBetweenPlayers()
         {
-            var sum = new IntVector2(0, 0);
+            var sum = new Vector2(0, 0);
             foreach (var player in m_players)
             {
                 sum += player.Pos;
@@ -153,7 +175,8 @@ namespace Hopper.ViewModel
                 logent);
         }
 
-        // sieves must be sorted by weight
+        // It is assumed that sieves are sorted by weights
+        // TODO: change input params
         private EntityStatesAndSieves GetPhaseStates(
             IReadOnlyList<ISieve> sieves,
             IReadOnlyList<UpdateInfo<EntityState>> updates,
@@ -165,6 +188,8 @@ namespace Hopper.ViewModel
             result.sieves = new ISieve[World.NumPhases];
 
             // construct the list of updates by phases
+            // this is sort of necessary, but i sort of don't like it
+            // TODO: Refactor in a separate method
             List<UpdateInfo<EntityState>>[] updatesByPhases =
                 new List<UpdateInfo<EntityState>>[World.NumPhases];
 
@@ -182,6 +207,7 @@ namespace Hopper.ViewModel
                 }
             }
 
+            // TODO: Refactor in a method
             for (int phase = 0; phase < World.NumPhases; phase++)
             {
                 if (updatesByPhases[phase].Count > 0)
@@ -213,6 +239,5 @@ namespace Hopper.ViewModel
 
             return result;
         }
-
     }
 }
