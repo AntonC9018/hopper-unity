@@ -1,20 +1,35 @@
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using Hopper.ViewModel;
 using UnityEngine;
 using Utils.Vector;
 
 namespace Hopper.View
 {
-    public class Scent : IScent, ICamera
+    public class SceneEnt : ISceneEnt, ICamera
     {
+        // TODO: do smth with this
+        public ReadOnlyCollection<ISieve> Sieves => m_sieves.AsReadOnly();
         public GameObject GameObject { protected get; set; }
 
-        public Scent(GameObject gameObject)
+        private List<ISieve> m_sieves;
+        public void SetSieves(IList<ISieve> sieves)
         {
-            GameObject = gameObject;
+            m_sieves = sieves.ToList();
+            m_sieves.Sort((a, b) => a.Weight - b.Weight);
         }
 
-        public Scent()
+
+        public SceneEnt(GameObject gameObject)
         {
+            GameObject = gameObject;
+            m_sieves = new List<ISieve>();
+        }
+
+        public SceneEnt()
+        {
+            m_sieves = new List<ISieve>();
         }
 
         public virtual void ChangeOrientation(IntVector2 orientation)

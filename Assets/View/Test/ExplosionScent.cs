@@ -1,6 +1,6 @@
 namespace Hopper.View
 {
-    public class ExplosionScent : Scent
+    public class ExplosionScent : SceneEnt
     {
         public static readonly int TotalTicks = 3;
         public int m_ticksLeft;

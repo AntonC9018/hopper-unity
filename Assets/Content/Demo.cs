@@ -98,17 +98,17 @@ namespace Hopper
             generator.Generate();
             m_world = new World(generator.grid.GetLength(1), generator.grid.GetLength(0));
 
-            m_viewModel = new View_Model(new Scent(Camera.main.gameObject));
-            m_viewModel.SetDefaultPrefab(new Prefab<Scent>(tilePrefab));
-            m_viewModel.SetPrefabForFactory(playerFactory.Id, new Prefab<Scent>(playerPrefab));
-            m_viewModel.SetPrefabForFactory(enemyFactory.Id, new Prefab<Scent>(enemyPrefab));
-            m_viewModel.SetPrefabForFactory(wallFactory.Id, new Prefab<Scent>(wallPrefab));
-            m_viewModel.SetPrefabForFactory(chestFactory.Id, new Prefab<Scent>(chestPrefab));
-            m_viewModel.SetPrefabForFactory(BombEntity.Factory.Id, new Prefab<Scent>(bombPrefab));
-            m_viewModel.SetPrefabForFactory(DroppedItem.Factory.Id, new Prefab<Scent>(droppedItemPrefab));
+            m_viewModel = new View_Model(new SceneEnt(Camera.main.gameObject));
+            m_viewModel.SetDefaultPrefab(new Prefab<SceneEnt>(tilePrefab));
+            m_viewModel.SetPrefabForFactory(playerFactory.Id, new Prefab<SceneEnt>(playerPrefab));
+            m_viewModel.SetPrefabForFactory(enemyFactory.Id, new Prefab<SceneEnt>(enemyPrefab));
+            m_viewModel.SetPrefabForFactory(wallFactory.Id, new Prefab<SceneEnt>(wallPrefab));
+            m_viewModel.SetPrefabForFactory(chestFactory.Id, new Prefab<SceneEnt>(chestPrefab));
+            m_viewModel.SetPrefabForFactory(BombEntity.Factory.Id, new Prefab<SceneEnt>(bombPrefab));
+            m_viewModel.SetPrefabForFactory(DroppedItem.Factory.Id, new Prefab<SceneEnt>(droppedItemPrefab));
 
             var explosionWatcher = new ExplosionWatcher(explosionPrefab);
-            var tileWatcher = new TileWatcher(new Prefab<Scent>(tilePrefab));
+            var tileWatcher = new TileWatcher(new Prefab<SceneEnt>(tilePrefab));
             m_viewModel.WatchWorld(m_world, explosionWatcher, tileWatcher);
 
             Reference.Width = playerPrefab.GetComponent<SpriteRenderer>().size.x;

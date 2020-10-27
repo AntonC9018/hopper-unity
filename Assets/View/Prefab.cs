@@ -4,7 +4,7 @@ using Utils.Vector;
 
 namespace Hopper.View
 {
-    public class Prefab<T> : IPrefab<T> where T : Scent, new()
+    public class Prefab<T> : IPrefab<T> where T : SceneEnt, new()
     {
         private GameObject m_obj;
 

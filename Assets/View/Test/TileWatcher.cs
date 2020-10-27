@@ -21,13 +21,13 @@ namespace Hopper.View
 
     public class TileWatcher : IWatcher
     {
-        private Prefab<Scent> m_tilePrefab;
-        private List<IScent> m_scents;
+        private Prefab<SceneEnt> m_tilePrefab;
+        private List<ISceneEnt> m_scents;
 
-        public TileWatcher(Prefab<Scent> prefab)
+        public TileWatcher(Prefab<SceneEnt> prefab)
         {
             m_tilePrefab = prefab;
-            m_scents = new List<IScent>();
+            m_scents = new List<ISceneEnt>();
         }
 
         public void Watch(World world, View_Model vm)
