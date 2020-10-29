@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5220043425541561747}
   - component: {fileID: 5220043425541561746}
-  - component: {fileID: 5220043425541561749}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -56,16 +55,11 @@ MonoBehaviour:
     type: 3}
   droppedItemPrefab: {fileID: 7548362609548230737, guid: 98e701a9d20d41f45a73cafa6a9cc46c,
     type: 3}
-  candaceAnimationManager: {fileID: 5220043425541561749}
---- !u!114 &5220043425541561749
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5220043425541561744}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95189457e66e54a4aa89945b5fa80151, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  bombPrefab: {fileID: 2940573717791803815, guid: 0d220a6e6e0e26b4fb3fb0916c9931fd,
+    type: 3}
+  explosionPrefab: {fileID: 3742176155140351328, guid: e7460bfa61d4ee14bae194dd629bb83c,
+    type: 3}
+  waterPrefab: {fileID: 4524910606653608612, guid: 55d1f9006a371c3429753e09c4317f9f,
+    type: 3}
+  icePrefab: {fileID: 6720839798088676010, guid: 95b1011926f85f74cb03d901ea9ea46b,
+    type: 3}

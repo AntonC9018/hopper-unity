@@ -25,6 +25,8 @@ namespace Hopper
         public GameObject droppedItemPrefab;
         public GameObject bombPrefab;
         public GameObject explosionPrefab;
+        public GameObject waterPrefab;
+        public GameObject icePrefab;
 
         private CandaceAnimationManager m_candaceAnimationManager;
         private World m_world;
@@ -66,7 +68,7 @@ namespace Hopper
 
             ContentProvider.DefaultProvider.UsePools(entityPool, itemPool);
 
-            var playerFactory = CreatePlayerFactory();
+            var playerFactory = CreatePlayerFactory().AddBehavior<Statused>();
 
             var wallFactory = new EntityFactory<Wall>()
                 .AddBehavior<Attackable>()
@@ -89,6 +91,9 @@ namespace Hopper
                         }
                     }
                 );
+
+            var waterFactory = Water.CreateFactory();
+            var iceFactory = IceFloor.CreateFactory();
 
             var itemMap = IdMap.Items.PackModMap();
             IdMap.Items.SetServerMap(itemMap);
@@ -117,6 +122,10 @@ namespace Hopper
                 new Prefab<SceneEnt>(bombPrefab, destroyOnDeathSieve));
             m_viewModel.SetPrefabForFactory(DroppedItem.Factory.Id,
                 new Prefab<SceneEnt>(droppedItemPrefab, destroyOnDeathSieve));
+            m_viewModel.SetPrefabForFactory(waterFactory.Id,
+                new Prefab<SceneEnt>(waterPrefab, destroyOnDeathSieve));
+            m_viewModel.SetPrefabForFactory(iceFactory.Id,
+                new Prefab<SceneEnt>(icePrefab, destroyOnDeathSieve));
 
             var explosionWatcher = new ExplosionWatcher(explosionPrefab);
             var tileWatcher = new TileWatcher(new Prefab<SceneEnt>(tilePrefab));
@@ -149,7 +158,13 @@ namespace Hopper
             // player.Inventory.Equip(shovelItem);
             // player.Inventory.Equip(knifeItem);
 
-            m_world.SpawnEntity(chestFactory, new IntVector2(center.x + 1, center.y + 1));
+            // m_world.SpawnEntity(chestFactory, new IntVector2(center.x + 1, center.y + 1));
+            m_world.SpawnEntity(waterFactory, new IntVector2(center.x + 1, center.y + 1));
+            m_world.SpawnEntity(waterFactory, new IntVector2(center.x, center.y + 1));
+            m_world.SpawnEntity(iceFactory, new IntVector2(center.x - 1, center.y - 1));
+            m_world.SpawnEntity(iceFactory, new IntVector2(center.x, center.y - 1));
+            m_world.SpawnEntity(iceFactory, new IntVector2(center.x + 1, center.y - 1));
+
         }
 
         private UnityEngine.KeyCode? LastInput = null;

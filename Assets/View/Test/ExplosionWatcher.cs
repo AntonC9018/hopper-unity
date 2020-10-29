@@ -36,7 +36,6 @@ namespace Hopper.View
 
         private void UpdateGoingExplosions()
         {
-            System.Console.WriteLine($"Explosion count: {m_goingExplosions.Count}");
             for (int i = m_goingExplosions.Count - 1; i >= 0; i--)
             {
                 m_goingExplosions[i].Update();

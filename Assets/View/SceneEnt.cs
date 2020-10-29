@@ -47,7 +47,7 @@ namespace Hopper.View
 
         public virtual void ChangePos(Core.Utils.Vector.Vector2 pos)
         {
-            if (m_prevPos == null)
+            if (ReferenceEquals(m_prevPos, null))
             {
                 m_prevPos = pos;
             }
