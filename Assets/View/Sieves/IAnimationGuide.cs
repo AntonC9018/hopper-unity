@@ -4,7 +4,7 @@ namespace Hopper.ViewModel
 {
     public enum AnimationCode
     {
-        Destroy, None
+        Destroy, None, Jump
     }
 
     public interface IAnimationGuide

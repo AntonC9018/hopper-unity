@@ -89,6 +89,11 @@ namespace Hopper.View
                     {
                         Destroy();
                     }
+                    // TODO: this should be scalable, obviously
+                    else if (((IViewSieve)sieve).AnimationCode == AnimationCode.Jump)
+                    {
+                        GameObject.GetComponent<Animator>().Play("Candace_Jump");
+                    }
                 }
             }
             ChangePos((finalState.pos - m_prevPos) * animationInfo.proportionIntoPhase + m_prevPos);
