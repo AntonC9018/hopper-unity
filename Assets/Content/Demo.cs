@@ -157,12 +157,12 @@ namespace Hopper
         // Update is called once per frame
         void Update()
         {
-            var map = new Dictionary<KeyCode, ChainName>{
-                { KeyCode.UpArrow, InputMappings.Up },
-                { KeyCode.DownArrow, InputMappings.Down },
-                { KeyCode.LeftArrow, InputMappings.Left },
-                { KeyCode.RightArrow, InputMappings.Right },
-                { KeyCode.Space, InputMappings.Weapon_0 },
+            var map = new Dictionary<KeyCode, InputMapping>{
+                { KeyCode.UpArrow, InputMapping.Up },
+                { KeyCode.DownArrow, InputMapping.Down },
+                { KeyCode.LeftArrow, InputMapping.Left },
+                { KeyCode.RightArrow, InputMapping.Right },
+                { KeyCode.Space, InputMapping.Weapon_0 },
             };
 
             // TODO: obviously redo
