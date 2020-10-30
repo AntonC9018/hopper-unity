@@ -29,6 +29,8 @@ namespace Hopper
         public GameObject icePrefab;
         public GameObject bounceTrapPrefab;
 
+        public GameObject defaultPrefab;
+
         private World m_world;
         private ModularShovel m_shovelItem;
         private ModularWeapon m_knifeItem;
@@ -108,7 +110,7 @@ namespace Hopper
             var animator = new ViewAnimator(new SceneEnt(Camera.main.gameObject), timer);
 
             m_viewModel = new View_Model(animator);
-            m_viewModel.SetDefaultPrefab(new Prefab<SceneEnt>(tilePrefab, destroyOnDeathSieve));
+            m_viewModel.SetDefaultPrefab(new Prefab<SceneEnt>(defaultPrefab, destroyOnDeathSieve));
             m_viewModel.SetPrefabForFactory(playerFactory.Id,
                 new Prefab<SceneEnt>(playerPrefab, destroyOnDeathSieve, playerJumpSieve));
             m_viewModel.SetPrefabForFactory(enemyFactory.Id,
@@ -161,13 +163,14 @@ namespace Hopper
             // player.Inventory.Equip(knifeItem);
 
             // m_world.SpawnEntity(chestFactory, new IntVector2(center.x + 1, center.y + 1));
-            m_world.SpawnEntity(waterFactory, new IntVector2(center.x + 1, center.y + 1));
-            m_world.SpawnEntity(waterFactory, new IntVector2(center.x, center.y + 1));
-            m_world.SpawnEntity(iceFactory, new IntVector2(center.x - 1, center.y - 1));
-            m_world.SpawnEntity(iceFactory, new IntVector2(center.x, center.y - 1));
-            m_world.SpawnEntity(iceFactory, new IntVector2(center.x + 1, center.y - 1));
-            var trap0 = m_world.SpawnEntity(trapFactory, new IntVector2(center.x - 2, center.y - 1));
-            trap0.Reorient(new IntVector2(1, 0));
+            // m_world.SpawnEntity(waterFactory, new IntVector2(center.x + 1, center.y + 1));
+            // m_world.SpawnEntity(waterFactory, new IntVector2(center.x, center.y + 1));
+            // m_world.SpawnEntity(iceFactory, new IntVector2(center.x - 1, center.y - 1));
+            // m_world.SpawnEntity(iceFactory, new IntVector2(center.x, center.y - 1));
+            // m_world.SpawnEntity(iceFactory, new IntVector2(center.x + 1, center.y - 1));
+            // var trap0 = m_world.SpawnEntity(trapFactory, new IntVector2(center.x - 2, center.y - 1));
+            // trap0.Reorient(new IntVector2(1, 0));
+            FreezeStatus.Status.TryApply(player, new FreezeData(), FreezeStat.Path.DefaultFile);
         }
 
         private UnityEngine.KeyCode? LastInput = null;
