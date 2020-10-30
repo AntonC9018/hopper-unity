@@ -156,9 +156,10 @@ namespace Hopper
 
             var center = generator.rooms[0].Center.Round();
 
+            var _ = Bow.DefaultItem; // this is required to reference the slot at least once
+
             var player = m_world.SpawnPlayer(playerFactory, center);
-            ((Inventory)player.Inventory).AddContainer(Bow.SlotId, new CircularItemContainer(1));
-            player.Inventory.Equip(Bow.Item);
+            player.Inventory.Equip(Bow.DefaultItem);
             // player.Inventory.Equip(m_knifeItem);
             // player.Inventory.Equip(new PackedItem(Bombing.item, 10000));
             // player.Inventory.Equip(shovelItem);
@@ -279,12 +280,10 @@ namespace Hopper
             );
 
             m_shovelItem = new ModularShovel(
-                Inventory.ShovelSlot,
                 shovelTargetProvider
             );
 
             m_knifeItem = new ModularWeapon(
-                Inventory.WeaponSlot,
                 knifeTargetProvider
             );
         }
