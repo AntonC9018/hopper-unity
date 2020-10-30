@@ -202,12 +202,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: GameObject
       objectReference: {fileID: 0}
-    - target: {fileID: 5220043425541561746, guid: 3fed377abcf18324f8ec7c51dbf51ec0,
-        type: 3}
-      propertyPath: icePrefab
-      value: 
-      objectReference: {fileID: 6720839798088676010, guid: 95b1011926f85f74cb03d901ea9ea46b,
-        type: 3}
     - target: {fileID: 5220043425541561747, guid: 3fed377abcf18324f8ec7c51dbf51ec0,
         type: 3}
       propertyPath: m_LocalPosition.x

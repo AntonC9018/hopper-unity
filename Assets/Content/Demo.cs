@@ -27,8 +27,8 @@ namespace Hopper
         public GameObject explosionPrefab;
         public GameObject waterPrefab;
         public GameObject icePrefab;
+        public GameObject bounceTrapPrefab;
 
-        private CandaceAnimationManager m_candaceAnimationManager;
         private World m_world;
         private ModularShovel m_shovelItem;
         private ModularWeapon m_knifeItem;
@@ -58,8 +58,6 @@ namespace Hopper
         void Start()
         {
             Core.Utils.UnitySystemConsoleRedirector.Redirect();
-
-            // m_candaceAnimationManager = GetComponent<CandaceAnimationManager>();
 
             CreateItems();
 
@@ -94,6 +92,7 @@ namespace Hopper
 
             var waterFactory = Water.CreateFactory();
             var iceFactory = IceFloor.CreateFactory();
+            var trapFactory = BounceTrap.Factory;
 
             var itemMap = IdMap.Items.PackModMap();
             IdMap.Items.SetServerMap(itemMap);
@@ -126,6 +125,8 @@ namespace Hopper
                 new Prefab<SceneEnt>(waterPrefab, destroyOnDeathSieve));
             m_viewModel.SetPrefabForFactory(iceFactory.Id,
                 new Prefab<SceneEnt>(icePrefab, destroyOnDeathSieve));
+            m_viewModel.SetPrefabForFactory(trapFactory.Id,
+                new Prefab<SceneEnt>(bounceTrapPrefab, destroyOnDeathSieve));
 
             var explosionWatcher = new ExplosionWatcher(explosionPrefab);
             var tileWatcher = new TileWatcher(new Prefab<SceneEnt>(tilePrefab));
@@ -155,6 +156,7 @@ namespace Hopper
 
             var player = m_world.SpawnPlayer(playerFactory, center);
             player.Inventory.Equip(m_knifeItem);
+            player.Inventory.Equip(new PackedItem(Bombing.item, 10000));
             // player.Inventory.Equip(shovelItem);
             // player.Inventory.Equip(knifeItem);
 
@@ -164,7 +166,8 @@ namespace Hopper
             m_world.SpawnEntity(iceFactory, new IntVector2(center.x - 1, center.y - 1));
             m_world.SpawnEntity(iceFactory, new IntVector2(center.x, center.y - 1));
             m_world.SpawnEntity(iceFactory, new IntVector2(center.x + 1, center.y - 1));
-
+            var trap0 = m_world.SpawnEntity(trapFactory, new IntVector2(center.x - 2, center.y - 1));
+            trap0.Reorient(new IntVector2(1, 0));
         }
 
         private UnityEngine.KeyCode? LastInput = null;
@@ -233,7 +236,7 @@ namespace Hopper
                 {
                     var target = actor.GetCellRelative(action.direction)?.GetEntityFromLayer(Layer.REAL);
                     if (target == null) return false;
-                    var interactable = target.Behaviors.Get<Interactable>();
+                    var interactable = target.Behaviors.TryGet<Interactable>();
                     if (interactable == null) return false;
                     return interactable.Activate();
                 }

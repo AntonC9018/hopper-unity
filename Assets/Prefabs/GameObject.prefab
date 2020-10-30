@@ -63,3 +63,5 @@ MonoBehaviour:
     type: 3}
   icePrefab: {fileID: 6720839798088676010, guid: 95b1011926f85f74cb03d901ea9ea46b,
     type: 3}
+  bounceTrapPrefab: {fileID: 1395067467687022867, guid: 1b14643a02c931e4b8bb3b1b031c0941,
+    type: 3}
