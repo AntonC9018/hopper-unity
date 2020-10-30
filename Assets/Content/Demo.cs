@@ -157,10 +157,14 @@ namespace Hopper
             var center = generator.rooms[0].Center.Round();
 
             var player = m_world.SpawnPlayer(playerFactory, center);
-            player.Inventory.Equip(m_knifeItem);
-            player.Inventory.Equip(new PackedItem(Bombing.item, 10000));
+            ((Inventory)player.Inventory).AddContainer(Bow.SlotId, new CircularItemContainer(1));
+            player.Inventory.Equip(Bow.Item);
+            // player.Inventory.Equip(m_knifeItem);
+            // player.Inventory.Equip(new PackedItem(Bombing.item, 10000));
             // player.Inventory.Equip(shovelItem);
             // player.Inventory.Equip(knifeItem);
+
+            m_world.SpawnEntity(Test.Dummy.Factory, new IntVector2(center.x + 4, center.y));
 
             // m_world.SpawnEntity(chestFactory, new IntVector2(center.x + 1, center.y + 1));
             // m_world.SpawnEntity(waterFactory, new IntVector2(center.x + 1, center.y + 1));
@@ -170,7 +174,7 @@ namespace Hopper
             // m_world.SpawnEntity(iceFactory, new IntVector2(center.x + 1, center.y - 1));
             // var trap0 = m_world.SpawnEntity(trapFactory, new IntVector2(center.x - 2, center.y - 1));
             // trap0.Reorient(new IntVector2(1, 0));
-            FreezeStatus.Status.TryApply(player, new FreezeData(), FreezeStat.Path.DefaultFile);
+            // FreezeStatus.Status.TryApply(player, new FreezeData(), FreezeStat.Path.DefaultFile);
         }
 
         private UnityEngine.KeyCode? LastInput = null;
@@ -184,6 +188,7 @@ namespace Hopper
                 { KeyCode.LeftArrow, InputMapping.Left },
                 { KeyCode.RightArrow, InputMapping.Right },
                 { KeyCode.Space, InputMapping.Weapon_0 },
+                { KeyCode.X, InputMapping.Weapon_1 },
             };
 
             // TODO: obviously redo
