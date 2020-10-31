@@ -65,5 +65,7 @@ MonoBehaviour:
     type: 3}
   bounceTrapPrefab: {fileID: 1395067467687022867, guid: 1b14643a02c931e4b8bb3b1b031c0941,
     type: 3}
+  sideWallPrefab: {fileID: 1457585309513614635, guid: 6c90aca326382af429c78feeeafce182,
+    type: 3}
   defaultPrefab: {fileID: 1345562120498652158, guid: aa0f356ef85e59a479679b27fe61a63b,
     type: 3}

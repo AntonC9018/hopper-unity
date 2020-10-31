@@ -28,6 +28,7 @@ namespace Hopper
         public GameObject waterPrefab;
         public GameObject icePrefab;
         public GameObject bounceTrapPrefab;
+        public GameObject barrierPrefab;
 
         public GameObject defaultPrefab;
 
@@ -95,6 +96,7 @@ namespace Hopper
             var waterFactory = Water.CreateFactory();
             var iceFactory = IceFloor.CreateFactory();
             var trapFactory = BounceTrap.Factory;
+            var barrierFactory = BlockingTrap.BarrierFactory;
 
             var itemMap = IdMap.Items.PackModMap();
             IdMap.Items.SetServerMap(itemMap);
@@ -129,6 +131,8 @@ namespace Hopper
                 new Prefab<SceneEnt>(icePrefab, destroyOnDeathSieve));
             m_viewModel.SetPrefabForFactory(trapFactory.Id,
                 new Prefab<SceneEnt>(bounceTrapPrefab, destroyOnDeathSieve));
+            m_viewModel.SetPrefabForFactory(barrierFactory.Id,
+                new Prefab<SceneEnt>(barrierPrefab, destroyOnDeathSieve));
 
             var explosionWatcher = new ExplosionWatcher(explosionPrefab);
             var tileWatcher = new TileWatcher(new Prefab<SceneEnt>(tilePrefab));
@@ -159,13 +163,19 @@ namespace Hopper
             var _ = Bow.DefaultItem; // this is required to reference the slot at least once
 
             var player = m_world.SpawnPlayer(playerFactory, center);
-            player.Inventory.Equip(Bow.DefaultItem);
+            player.Inventory.Equip(m_knifeItem);
+
+            m_world.SpawnEntity(BlockingTrap.CreateFactory(), player.Pos + IntVector2.Right);
+
+            // player.Inventory.Equip(Bow.DefaultItem);
             // player.Inventory.Equip(m_knifeItem);
             // player.Inventory.Equip(new PackedItem(Bombing.item, 10000));
             // player.Inventory.Equip(shovelItem);
             // player.Inventory.Equip(knifeItem);
 
-            m_world.SpawnEntity(Test.Dummy.Factory, new IntVector2(center.x + 4, center.y));
+            // m_world.SpawnEntity(Test.Dummy.Factory, new IntVector2(center.x + 4, center.y));
+            // m_world.SpawnEntity(barrierFactory, new IntVector2(center.x + 2, center.y), new IntVector2(1, 0));
+            // m_world.SpawnEntity(barrierFactory, new IntVector2(center.x + 2, center.y), new IntVector2(-1, 0));
 
             // m_world.SpawnEntity(chestFactory, new IntVector2(center.x + 1, center.y + 1));
             // m_world.SpawnEntity(waterFactory, new IntVector2(center.x + 1, center.y + 1));
