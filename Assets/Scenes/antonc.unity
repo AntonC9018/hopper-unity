@@ -217,6 +217,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: GameObject
       objectReference: {fileID: 0}
+    - target: {fileID: 5220043425541561746, guid: 3fed377abcf18324f8ec7c51dbf51ec0,
+        type: 3}
+      propertyPath: barrierPrefab
+      value: 
+      objectReference: {fileID: 1457585309513614635, guid: 6c90aca326382af429c78feeeafce182,
+        type: 3}
     - target: {fileID: 5220043425541561747, guid: 3fed377abcf18324f8ec7c51dbf51ec0,
         type: 3}
       propertyPath: m_LocalPosition.x
