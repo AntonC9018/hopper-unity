@@ -132,7 +132,7 @@ namespace Hopper
             m_viewModel.SetPrefabForFactory(trapFactory.Id,
                 new Prefab<SceneEnt>(bounceTrapPrefab, destroyOnDeathSieve));
             m_viewModel.SetPrefabForFactory(barrierFactory.Id,
-                new Prefab<SceneEnt>(barrierPrefab, destroyOnDeathSieve));
+                new Prefab<BarrierSceneEnt>(barrierPrefab, destroyOnDeathSieve));
 
             var explosionWatcher = new ExplosionWatcher(explosionPrefab);
             var tileWatcher = new TileWatcher(new Prefab<SceneEnt>(tilePrefab));
