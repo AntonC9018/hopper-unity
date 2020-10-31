@@ -29,6 +29,7 @@ namespace Hopper
         public GameObject icePrefab;
         public GameObject bounceTrapPrefab;
         public GameObject barrierPrefab;
+        public GameObject knipperPrefab;
 
         public GameObject defaultPrefab;
 
@@ -133,6 +134,8 @@ namespace Hopper
                 new Prefab<SceneEnt>(bounceTrapPrefab, destroyOnDeathSieve));
             m_viewModel.SetPrefabForFactory(barrierFactory.Id,
                 new Prefab<BarrierSceneEnt>(barrierPrefab, destroyOnDeathSieve));
+            m_viewModel.SetPrefabForFactory(Knipper.Factory.Id,
+                new Prefab<BarrierSceneEnt>(knipperPrefab, destroyOnDeathSieve));
 
             var explosionWatcher = new ExplosionWatcher(explosionPrefab);
             var tileWatcher = new TileWatcher(new Prefab<SceneEnt>(tilePrefab));
@@ -165,26 +168,26 @@ namespace Hopper
             var player = m_world.SpawnPlayer(playerFactory, center);
             player.Inventory.Equip(m_knifeItem);
 
-            m_world.SpawnEntity(BlockingTrap.CreateFactory(), player.Pos + IntVector2.Right);
+            // m_world.SpawnEntity(BlockingTrap.CreateFactory(), player.Pos + IntVector2.Right);
 
-            player.Inventory.Equip(Bow.DefaultItem);
+            // player.Inventory.Equip(Bow.DefaultItem);
             // player.Inventory.Equip(m_knifeItem);
             // player.Inventory.Equip(new PackedItem(Bombing.item, 10000));
             // player.Inventory.Equip(shovelItem);
             // player.Inventory.Equip(knifeItem);
 
-            m_world.SpawnEntity(Test.Dummy.Factory, new IntVector2(center.x + 4, center.y));
+            m_world.SpawnEntity(Knipper.Factory, new IntVector2(center.x + 4, center.y));
             // m_world.SpawnEntity(barrierFactory, new IntVector2(center.x + 2, center.y), new IntVector2(1, 0));
             // m_world.SpawnEntity(barrierFactory, new IntVector2(center.x + 2, center.y), new IntVector2(-1, 0));
 
             // m_world.SpawnEntity(chestFactory, new IntVector2(center.x + 1, center.y + 1));
-            m_world.SpawnEntity(waterFactory, new IntVector2(center.x + 1, center.y + 1));
-            m_world.SpawnEntity(waterFactory, new IntVector2(center.x, center.y + 1));
-            m_world.SpawnEntity(iceFactory, new IntVector2(center.x - 1, center.y - 1));
-            m_world.SpawnEntity(iceFactory, new IntVector2(center.x, center.y - 1));
-            m_world.SpawnEntity(iceFactory, new IntVector2(center.x + 1, center.y - 1));
-            var trap0 = m_world.SpawnEntity(trapFactory, new IntVector2(center.x - 2, center.y - 1));
-            trap0.Reorient(new IntVector2(1, 0));
+            // m_world.SpawnEntity(waterFactory, new IntVector2(center.x + 1, center.y + 1));
+            // m_world.SpawnEntity(waterFactory, new IntVector2(center.x, center.y + 1));
+            // m_world.SpawnEntity(iceFactory, new IntVector2(center.x - 1, center.y - 1));
+            // m_world.SpawnEntity(iceFactory, new IntVector2(center.x, center.y - 1));
+            // m_world.SpawnEntity(iceFactory, new IntVector2(center.x + 1, center.y - 1));
+            // var trap0 = m_world.SpawnEntity(trapFactory, new IntVector2(center.x - 2, center.y - 1));
+            // trap0.Reorient(new IntVector2(1, 0));
             // FreezeStatus.Status.TryApply(player, new FreezeData(), FreezeStat.Path.DefaultFile);
         }
 
