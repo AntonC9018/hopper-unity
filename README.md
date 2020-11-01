@@ -4,6 +4,8 @@ This is supposed to be the `View` part for [this](https://github.com/AntonC9018/
 
 This particular View implementation involves Unity as the game engine.
 
+This project binds Logic with Graphics. See a demo in the file `Assets/Content/Demo.cs` (also currently used for the scene).
+
 # Setup
 
 1. Get Unity version `2019.4.10f1` installed on your computer, which you can find [here](https://unity3d.com/unity/qa/lts-releases). I recommend using the torrent install option, it's much faster.
