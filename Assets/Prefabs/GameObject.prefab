@@ -69,5 +69,9 @@ MonoBehaviour:
     type: 3}
   knipperPrefab: {fileID: 3969218034935886390, guid: e42eace1e0d3f7748ab26ac56045e247,
     type: 3}
+  laserBeamHeadPrefab: {fileID: 4904654494055503833, guid: a9248e8a13219904f9482a613374b57c,
+    type: 3}
+  laserBeamBodyPrefab: {fileID: 880982907903620503, guid: 39f4614196b6334428333d28c18f3b54,
+    type: 3}
   defaultPrefab: {fileID: 1345562120498652158, guid: aa0f356ef85e59a479679b27fe61a63b,
     type: 3}

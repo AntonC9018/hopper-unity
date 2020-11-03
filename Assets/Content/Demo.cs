@@ -30,6 +30,8 @@ namespace Hopper
         public GameObject bounceTrapPrefab;
         public GameObject barrierPrefab;
         public GameObject knipperPrefab;
+        public GameObject laserBeamHeadPrefab;
+        public GameObject laserBeamBodyPrefab;
 
         public GameObject defaultPrefab;
 
@@ -133,13 +135,16 @@ namespace Hopper
             m_viewModel.SetPrefabForFactory(trapFactory.Id,
                 new Prefab<SceneEnt>(bounceTrapPrefab, destroyOnDeathSieve));
             m_viewModel.SetPrefabForFactory(barrierFactory.Id,
-                new Prefab<BarrierSceneEnt>(barrierPrefab, destroyOnDeathSieve));
+                new Prefab<RegularRotationSceneEnt>(barrierPrefab, destroyOnDeathSieve));
             m_viewModel.SetPrefabForFactory(Knipper.Factory.Id,
-                new Prefab<BarrierSceneEnt>(knipperPrefab, destroyOnDeathSieve));
+                new Prefab<RegularRotationSceneEnt>(knipperPrefab, destroyOnDeathSieve));
+            m_viewModel.SetPrefabForFactory(TestBoss.Factory.Id,
+                new Prefab<RegularRotationSceneEnt>(knipperPrefab, destroyOnDeathSieve));
 
             var explosionWatcher = new ExplosionWatcher(explosionPrefab);
+            var laserBeamWatcher = new LaserBeamWatcher(laserBeamHeadPrefab, laserBeamBodyPrefab);
             var tileWatcher = new TileWatcher(new Prefab<SceneEnt>(tilePrefab));
-            m_viewModel.WatchWorld(m_world, explosionWatcher, tileWatcher);
+            m_viewModel.WatchWorld(m_world, explosionWatcher, tileWatcher, laserBeamWatcher);
 
             Reference.Width = playerPrefab.GetComponent<SpriteRenderer>().size.x;
 
@@ -176,7 +181,7 @@ namespace Hopper
             // player.Inventory.Equip(shovelItem);
             // player.Inventory.Equip(knifeItem);
 
-            m_world.SpawnEntity(Knipper.Factory, new IntVector2(center.x + 4, center.y));
+            m_world.SpawnEntity(TestBoss.Factory, new IntVector2(center.x + 4, center.y));
             // m_world.SpawnEntity(barrierFactory, new IntVector2(center.x + 2, center.y), new IntVector2(1, 0));
             // m_world.SpawnEntity(barrierFactory, new IntVector2(center.x + 2, center.y), new IntVector2(-1, 0));
 

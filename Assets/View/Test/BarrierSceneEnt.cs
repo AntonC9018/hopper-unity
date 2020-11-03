@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Hopper.View
 {
-    public class BarrierSceneEnt : SceneEnt
+    public class RegularRotationSceneEnt : SceneEnt
     {
         public override void ChangeOrientation(IntVector2 orientation)
         {
