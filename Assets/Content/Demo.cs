@@ -30,6 +30,8 @@ namespace Hopper
         public GameObject bounceTrapPrefab;
         public GameObject barrierPrefab;
         public GameObject knipperPrefab;
+        public GameObject testBossPrefab;
+        public GameObject whelpPrefab;
         public GameObject laserBeamHeadPrefab;
         public GameObject laserBeamBodyPrefab;
 
@@ -137,9 +139,11 @@ namespace Hopper
             m_viewModel.SetPrefabForFactory(barrierFactory.Id,
                 new Prefab<RegularRotationSceneEnt>(barrierPrefab, destroyOnDeathSieve));
             m_viewModel.SetPrefabForFactory(Knipper.Factory.Id,
-                new Prefab<RegularRotationSceneEnt>(knipperPrefab, destroyOnDeathSieve));
+                new Prefab<SceneEnt>(knipperPrefab, destroyOnDeathSieve));
             m_viewModel.SetPrefabForFactory(TestBoss.Factory.Id,
-                new Prefab<RegularRotationSceneEnt>(knipperPrefab, destroyOnDeathSieve));
+                new Prefab<SceneEnt>(testBossPrefab, destroyOnDeathSieve));
+            m_viewModel.SetPrefabForFactory(TestBoss.Whelp.Factory.Id,
+                new Prefab<SceneEnt>(whelpPrefab, destroyOnDeathSieve));
 
             var explosionWatcher = new ExplosionWatcher(explosionPrefab);
             var laserBeamWatcher = new LaserBeamWatcher(laserBeamHeadPrefab, laserBeamBodyPrefab);
@@ -180,6 +184,8 @@ namespace Hopper
             // player.Inventory.Equip(new PackedItem(Bombing.item, 10000));
             // player.Inventory.Equip(shovelItem);
             // player.Inventory.Equip(knifeItem);
+
+            // m_world.SpawnEntity(Skeleton.Factory, new IntVector2(center.x + 1, center.y));
 
             m_world.SpawnEntity(TestBoss.Factory, new IntVector2(center.x + 4, center.y));
             // m_world.SpawnEntity(barrierFactory, new IntVector2(center.x + 2, center.y), new IntVector2(1, 0));
@@ -225,7 +231,7 @@ namespace Hopper
                 // TODO: use virtual buttons
                 // Actual button -> virtual button -> input mapping -> action
                 // Physical layer -> Unity layer   -> logic layer   
-                foreach (var player in m_world.m_state.Players)
+                foreach (var player in m_world.State.Players)
                 {
                     Action action = null;
                     Controllable input = player.Behaviors.Get<Controllable>();

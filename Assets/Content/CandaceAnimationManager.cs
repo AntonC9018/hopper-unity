@@ -9,7 +9,7 @@ public class CandaceAnimationManager : MonoBehaviour    //WARNING: EXTREMELY ROU
 
     private void Update()
     {
-        foreach (var player in _world.m_state.Players)
+        foreach (var player in _world.State.Players)
         {
             foreach (var updateInfo in player.History.Updates)
             {

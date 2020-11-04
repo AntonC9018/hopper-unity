@@ -34,7 +34,7 @@ namespace Hopper.ViewModel
         public void WatchWorld(World world, params IWatcher[] customWatchers)
         {
             world.SpawnEntityEvent += AddScentForLogent;
-            world.m_state.EndOfLoopEvent += Update;
+            world.State.EndOfLoopEvent += Update;
             foreach (var customWatcher in customWatchers)
             {
                 // TODO: These events should prefferably be directly associated with the world
@@ -171,7 +171,7 @@ namespace Hopper.ViewModel
             return GetPhaseStates(
                 scent.Sieves,
                 logent.History.Updates,
-                logent.World.m_state.TimeStampPhaseLimit,
+                logent.World.State.TimeStampPhaseLimit,
                 logent);
         }
 
@@ -180,7 +180,7 @@ namespace Hopper.ViewModel
         private EntityStatesAndSieves GetPhaseStates(
             IReadOnlyList<ISieve> sieves,
             IReadOnlyList<UpdateInfo<EntityState>> updates,
-            IList<int> timestampPhaseLimits,
+            IReadOnlyList<int> timestampPhaseLimits,
             LogicEnt logent)
         {
             var result = new EntityStatesAndSieves();

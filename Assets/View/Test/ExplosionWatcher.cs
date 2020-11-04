@@ -25,7 +25,7 @@ namespace Hopper.View
             {
                 if (w == world) AddExplosion(pos);
             };
-            world.m_state.EndOfLoopEvent += UpdateGoingExplosions;
+            world.State.EndOfLoopEvent += UpdateGoingExplosions;
         }
 
         private void AddExplosion(IntVector2 pos)

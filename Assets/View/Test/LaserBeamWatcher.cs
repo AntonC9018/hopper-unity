@@ -33,7 +33,7 @@ namespace Hopper.View
             {
                 if (w == world) AddBeam(i);
             };
-            world.m_state.EndOfLoopEvent += UpdateBeams;
+            world.State.StartOfLoopEvent += UpdateBeams;
         }
 
         public void AddBeam(LaserInfo laser_info)
@@ -61,9 +61,9 @@ namespace Hopper.View
             {
                 foreach (var bodyEl in info.body)
                 {
-                    // bodyEl.Destroy();
+                    bodyEl.Destroy();
                 }
-                // info.head.Destroy();
+                info.head.Destroy();
             }
             m_activeBeams.Clear();
         }
