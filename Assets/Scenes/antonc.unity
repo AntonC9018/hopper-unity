@@ -229,6 +229,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 3969218034935886390, guid: e42eace1e0d3f7748ab26ac56045e247,
         type: 3}
+    - target: {fileID: 5220043425541561746, guid: 3fed377abcf18324f8ec7c51dbf51ec0,
+        type: 3}
+      propertyPath: testBossPrefab
+      value: 
+      objectReference: {fileID: 3098619925370815986, guid: 49393cf7c1109ba41878ed2a33382b3a,
+        type: 3}
     - target: {fileID: 5220043425541561747, guid: 3fed377abcf18324f8ec7c51dbf51ec0,
         type: 3}
       propertyPath: m_LocalPosition.x

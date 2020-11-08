@@ -69,7 +69,7 @@ MonoBehaviour:
     type: 3}
   knipperPrefab: {fileID: 3969218034935886390, guid: e42eace1e0d3f7748ab26ac56045e247,
     type: 3}
-  testBossPrefab: {fileID: 6343788459842969493, guid: c3bee4a36172b7647a15b5e759094002,
+  testBossPrefab: {fileID: 3098619925370815986, guid: 49393cf7c1109ba41878ed2a33382b3a,
     type: 3}
   whelpPrefab: {fileID: 6648322181436969024, guid: 29c435ab4b007af4384e96c4a5ac723b,
     type: 3}
