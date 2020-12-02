@@ -209,19 +209,50 @@ namespace Hopper
         }
 
         private UnityEngine.KeyCode? LastInput = null;
+        private Dictionary<KeyCode, InputMapping> InputMap = new Dictionary<KeyCode, InputMapping> {
+            { KeyCode.Space, InputMapping.Weapon_0 },
+            { KeyCode.X, InputMapping.Weapon_1 },
+        };
+        private Dictionary<KeyCode, IntVector2> VectorMapping = new Dictionary<KeyCode, IntVector2>{
+            { KeyCode.UpArrow, IntVector2.Up },
+            { KeyCode.DownArrow, IntVector2.Down },
+            { KeyCode.LeftArrow, IntVector2.Left },
+            { KeyCode.RightArrow, IntVector2.Right },
+        };
+
+        private bool IsInputValid()
+        {
+            return InputMap.Keys.Any(i => UnityEngine.Input.GetKeyDown(i))
+                || VectorMapping.Keys.Any(i => UnityEngine.Input.GetKeyDown(i));
+        }
+
+        private Action GetActionFor(Entity player)
+        {
+            Controllable input = player.Behaviors.Get<Controllable>();
+
+            foreach (var code in InputMap.Keys)
+            {
+                if (UnityEngine.Input.GetKeyDown(code))
+                {
+                    LastInput = code;
+                    return input.ConvertInputToAction(InputMap[code]);
+                }
+            }
+
+            foreach (var code in VectorMapping.Keys)
+            {
+                if (UnityEngine.Input.GetKeyDown(code))
+                {
+                    LastInput = code;
+                    return input.ConvertVectorToAction(VectorMapping[code]);
+                }
+            }
+            return null;
+        }
 
         // Update is called once per frame
         void Update()
         {
-            var map = new Dictionary<KeyCode, InputMapping>{
-                { KeyCode.UpArrow, InputMapping.Up },
-                { KeyCode.DownArrow, InputMapping.Down },
-                { KeyCode.LeftArrow, InputMapping.Left },
-                { KeyCode.RightArrow, InputMapping.Right },
-                { KeyCode.Space, InputMapping.Weapon_0 },
-                { KeyCode.X, InputMapping.Weapon_1 },
-            };
-
             // TODO: obviously redo
             if (LastInput != null)
             {
@@ -232,27 +263,14 @@ namespace Hopper
                 return;
             }
 
-            if (map.Keys.Any(i => UnityEngine.Input.GetKeyDown(i)))
+            if (IsInputValid())
             {
                 // TODO: use virtual buttons
                 // Actual button -> virtual button -> input mapping -> action
                 // Physical layer -> Unity layer   -> logic layer   
                 foreach (var player in m_world.State.Players)
                 {
-                    Action action = null;
-                    Controllable input = player.Behaviors.Get<Controllable>();
-
-                    foreach (var code in map.Keys)
-                    {
-                        if (UnityEngine.Input.GetKeyDown(code))
-                        {
-                            LastInput = code;
-                            action = input.ConvertInputToAction(map[code]);
-                            break;
-                        }
-                    }
-
-                    player.Behaviors.Get<Acting>().NextAction = action;
+                    player.Behaviors.Get<Acting>().NextAction = GetActionFor(player);
                     m_world.Loop();
 
                     if (LastInput != null)
