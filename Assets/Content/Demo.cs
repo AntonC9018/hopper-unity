@@ -42,6 +42,7 @@ namespace Hopper
         private ModularShovel m_shovelItem;
         private ModularWeapon m_knifeItem;
         private View_Model m_viewModel;
+        private InputManager m_inputManager;
 
 
         private ISuperPool CreateItemPool()
@@ -66,6 +67,7 @@ namespace Hopper
 
         void Start()
         {
+            m_inputManager = new InputManager();
             Core.Utils.UnitySystemConsoleRedirector.Redirect();
 
             CreateItems();
@@ -208,81 +210,14 @@ namespace Hopper
             // FreezeStatus.Status.TryApply(player, new FreezeData(), FreezeStat.Path.DefaultFile);
         }
 
-        private UnityEngine.KeyCode? LastInput = null;
-        private Dictionary<KeyCode, InputMapping> InputMap = new Dictionary<KeyCode, InputMapping> {
-            { KeyCode.Space, InputMapping.Weapon_0 },
-            { KeyCode.X, InputMapping.Weapon_1 },
-        };
-        private Dictionary<KeyCode, IntVector2> VectorMapping = new Dictionary<KeyCode, IntVector2>{
-            { KeyCode.UpArrow, IntVector2.Up },
-            { KeyCode.DownArrow, IntVector2.Down },
-            { KeyCode.LeftArrow, IntVector2.Left },
-            { KeyCode.RightArrow, IntVector2.Right },
-        };
-
-        private bool IsInputValid()
+        private void Update()
         {
-            return InputMap.Keys.Any(i => UnityEngine.Input.GetKeyDown(i))
-                || VectorMapping.Keys.Any(i => UnityEngine.Input.GetKeyDown(i));
+            if (m_inputManager.TrySetAction(m_world))
+            {
+                m_world.Loop();
+            }
         }
 
-        private Action GetActionFor(Entity player)
-        {
-            Controllable input = player.Behaviors.Get<Controllable>();
-
-            foreach (var code in InputMap.Keys)
-            {
-                if (UnityEngine.Input.GetKeyDown(code))
-                {
-                    LastInput = code;
-                    return input.ConvertInputToAction(InputMap[code]);
-                }
-            }
-
-            foreach (var code in VectorMapping.Keys)
-            {
-                if (UnityEngine.Input.GetKeyDown(code))
-                {
-                    LastInput = code;
-                    return input.ConvertVectorToAction(VectorMapping[code]);
-                }
-            }
-            return null;
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-            // TODO: obviously redo
-            if (LastInput != null)
-            {
-                if (UnityEngine.Input.GetKeyUp(LastInput ?? 0))
-                {
-                    LastInput = null;
-                }
-                return;
-            }
-
-            if (IsInputValid())
-            {
-                // TODO: use virtual buttons
-                // Actual button -> virtual button -> input mapping -> action
-                // Physical layer -> Unity layer   -> logic layer   
-                foreach (var player in m_world.State.Players)
-                {
-                    player.Behaviors.Get<Acting>().NextAction = GetActionFor(player);
-                    m_world.Loop();
-
-                    if (LastInput != null)
-                    {
-                        if (UnityEngine.Input.GetKeyUp(LastInput ?? 0))
-                        {
-                            LastInput = null;
-                        }
-                    }
-                }
-            }
-        }
         private EntityFactory<Player> CreatePlayerFactory()
         {
             var moveAction = new BehaviorAction<Moving>();
