@@ -43,7 +43,8 @@ namespace Hopper.ViewModel
             m_phaseSpanMillis = new int[World.NumPhases];
             // for now, leave the rest at 0
             m_phaseSpanMillis[(int)Phase.PLAYER] = 300;
-            m_phaseSpanMillis[(int)Phase.REAL] = 300;
+            // m_phaseSpanMillis[(int)Phase.REAL] = 300;
+            m_phaseSpanMillis[(int)Phase.TRAP] = 300;
 
             m_totalTimePerIteration = m_phaseSpanMillis.Sum();
         }

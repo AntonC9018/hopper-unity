@@ -12,6 +12,7 @@ using Test;
 using Core.History;
 using Hopper.ViewModel;
 using Hopper.View;
+using Core.Stats.Basic;
 
 namespace Hopper
 {
@@ -103,8 +104,8 @@ namespace Hopper
             var trapFactory = BounceTrap.Factory;
             var barrierFactory = BlockingTrap.BarrierFactory;
 
-            var itemMap = IdMap.Items.PackModMap();
-            IdMap.Items.SetServerMap(itemMap);
+            var itemMap = Registry.Default.Items.PackModMap();
+            Registry.Default.Items.SetServerMap(itemMap);
 
             var generator = CreateGenerator();
             generator.Generate();
@@ -129,7 +130,7 @@ namespace Hopper
             m_viewModel.SetPrefabForFactory(BombEntity.Factory.Id,
                 new Prefab<SceneEnt>(bombPrefab, destroyOnDeathSieve));
             m_viewModel.SetPrefabForFactory(DroppedItem.Factory.Id,
-                new Prefab<SceneEnt>(droppedItemPrefab, destroyOnDeathSieve));
+                new Prefab<RegularRotationSceneEnt>(droppedItemPrefab, destroyOnDeathSieve));
             m_viewModel.SetPrefabForFactory(waterFactory.Id,
                 new Prefab<SceneEnt>(waterPrefab, destroyOnDeathSieve));
             m_viewModel.SetPrefabForFactory(iceFactory.Id,
@@ -173,9 +174,14 @@ namespace Hopper
             var center = generator.rooms[0].Center.Round();
 
             var _ = Bow.DefaultItem; // this is required to reference the slot at least once
+            // player.Inventory.Equip(m_knifeItem);
 
             var player = m_world.SpawnPlayer(playerFactory, center);
-            player.Inventory.Equip(m_knifeItem);
+            m_world.SpawnEntity(trapFactory, center + IntVector2.Right, IntVector2.Right);
+            // player.Stats.GetRaw(Push.Source.Resistance.Path)[BounceTrap.BounceSource.Id] = 20;
+            m_world.SpawnEntity(wallFactory, center + IntVector2.Right * 2);
+
+            // m_world.SpawnEntity(trapFactory, center + IntVector2.Right * 2, IntVector2.Left);
 
             // m_world.SpawnEntity(BlockingTrap.CreateFactory(), player.Pos + IntVector2.Right);
 
@@ -185,10 +191,10 @@ namespace Hopper
             // player.Inventory.Equip(shovelItem);
             // player.Inventory.Equip(knifeItem);
 
-            // m_world.SpawnEntity(Skeleton.Factory, new IntVector2(center.x + 1, center.y));
+            // m_world.SpawnEntity(Knipper.Factory, new IntVector2(center.x + 4, center.y));
+            // m_world.SpawnEntity(Knipper.Factory, new IntVector2(center.x + 3, center.y));
 
-            m_world.SpawnEntity(TestBoss.Factory, new IntVector2(center.x + 4, center.y));
-            // m_world.SpawnEntity(barrierFactory, new IntVector2(center.x + 2, center.y), new IntVector2(1, 0));
+            // m_world.SpawnEntity(TestBoss.Factory, new IntVector2(center.x + 4, center.y));
             // m_world.SpawnEntity(barrierFactory, new IntVector2(center.x + 2, center.y), new IntVector2(-1, 0));
 
             // m_world.SpawnEntity(chestFactory, new IntVector2(center.x + 1, center.y + 1));
