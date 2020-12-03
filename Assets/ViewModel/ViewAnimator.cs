@@ -21,7 +21,6 @@ namespace Hopper.ViewModel
         private int m_totalTimePerIteration;
         private int m_currentPhase;
         private int m_tickCount;
-        private int m_prevPhaseMillis;
 
         public ViewAnimator(ICamera camera, ITimer timer)
         {
@@ -48,7 +47,6 @@ namespace Hopper.ViewModel
         {
             m_currentPhase = 0;
             m_tickCount = 0;
-            m_prevPhaseMillis = 0;
             m_firstTimeThisPhase = true;
 
             m_currentData = historyData;

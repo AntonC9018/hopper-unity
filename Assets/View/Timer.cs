@@ -9,7 +9,6 @@ namespace Hopper.View
         public event Action<int> TimerEvent;
 
         private float m_millis = 0;
-        private float m_prevDelta = 0;
         private bool m_isWorking = false;
 
         private void Update()
