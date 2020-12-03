@@ -1,10 +1,9 @@
 using System.Collections.Generic;
-using System.Linq;
 using Core;
+using Core.Utils.Vector;
 using Hopper.ViewModel;
 using Test;
 using UnityEngine;
-using Core.Utils.Vector;
 
 namespace Hopper.View
 {

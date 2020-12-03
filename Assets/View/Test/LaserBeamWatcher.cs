@@ -3,7 +3,6 @@ using Core;
 using Hopper.ViewModel;
 using Test;
 using UnityEngine;
-using Core.Utils.Vector;
 
 namespace Hopper.View
 {

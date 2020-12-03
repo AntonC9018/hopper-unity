@@ -109,8 +109,8 @@ namespace Hopper
             // m_world.SpawnEntity(BlockingTrap.CreateFactory(), player.Pos + IntVector2.Right);
 
             /* Knife and Shivel basic equipment. */
-            // player.Inventory.Equip(m_knifeItem);
-            // player.Inventory.Equip(shovelItem);
+            player.Inventory.Equip(m_knifeItem);
+            player.Inventory.Equip(m_shovelItem);
 
             /* Bow. X toggle charge, vector input to shoot */
             // player.Inventory.Equip(Bow.DefaultItem);
@@ -219,10 +219,7 @@ namespace Hopper
 
         private void CreateItems()
         {
-            var shovelTargetProvider = TargetProvider.CreateDig(
-                Pattern.Default,
-                Handlers.DigChain
-            );
+            var shovelTargetProvider = TargetProvider.CreateSimpleDig();
 
             var knifeTargetProvider = TargetProvider.CreateAtk(
                 Pattern.Default,
