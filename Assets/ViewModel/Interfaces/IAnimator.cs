@@ -11,7 +11,7 @@ namespace Hopper.ViewModel
 
     public interface IAnimator
     {
-        void Animate(IEnumerable<HistoryData> historyData, Vector2[] cameraData);
-        void SetupCamera(Vector2 cameraInitialPosition);
+        void Animate(IEnumerable<HistoryData> historyData);
+        void SetCamera(CameraState cameraInitialPosition);
     }
 }

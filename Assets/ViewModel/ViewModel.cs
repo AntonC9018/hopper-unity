@@ -3,7 +3,6 @@ using System.Linq;
 using Core;
 using Core.Utils;
 using Core.History;
-using Core.Utils.Vector;
 using LogicEnt = Core.Entity;  // LogicEnt = Logent = Logical Entity
 
 namespace Hopper.ViewModel
@@ -15,16 +14,13 @@ namespace Hopper.ViewModel
         private List<LogicEnt> m_players;
         private IPrefab<ISceneEnt> m_defaultPrefab;
         private IAnimator m_animator; // not really an animator
-        private Dictionary<LogicEnt, EntityState> m_prevStates;
+        private CameraState m_cameraState;
 
         public View_Model(IAnimator animator)
         {
             m_factoryIdPrefabMap = new Dictionary<int, IPrefab<ISceneEnt>>();
             m_activeScentsMap = new Dictionary<LogicEnt, ISceneEnt>();
             m_players = new List<LogicEnt>();
-
-            // This one is absolutely hideous
-            m_prevStates = new Dictionary<LogicEnt, EntityState>();
 
             // The contract between these two `managers` (their duties) should
             // be outlined more explicitly (currently heck knows where's the line between them)
@@ -44,7 +40,7 @@ namespace Hopper.ViewModel
             }
         }
 
-        // factory is, in essence, the entity type
+        // factory is the entity kind
         public void SetPrefabForFactory(int factoryId, IPrefab<ISceneEnt> prefab)
         {
             m_factoryIdPrefabMap[factoryId] = prefab;
@@ -61,16 +57,10 @@ namespace Hopper.ViewModel
             // the easiest way to implement this would be through the sieves
             // which would unhide the entity, but then we need an extra phase for that
             // So this one's an open question
-            var factoryId = logent.GetFactoryId();
-
-            // TODO: this should be a separate method
-            IPrefab<ISceneEnt> prefab = m_factoryIdPrefabMap.ContainsKey(factoryId)
-                ? m_factoryIdPrefabMap[factoryId]
-                : m_defaultPrefab;
+            IPrefab<ISceneEnt> prefab = GetPrefabForLogent(logent);
             ISceneEnt scent = prefab.Instantiate(logent.Pos, logent.Orientation);
 
             m_activeScentsMap.Add(logent, scent);
-            m_prevStates.Add(logent, new EntityState(logent));
 
             if (logent.IsPlayer)
             {
@@ -81,24 +71,33 @@ namespace Hopper.ViewModel
                 // the world.
                 if (m_players.Count == 1)
                 {
-                    m_animator.SetupCamera(GetCenterBetweenPlayers());
+                    m_cameraState = new CameraState(m_players);
+                    m_animator.SetCamera(m_cameraState);
                 }
             }
         }
 
+        private IPrefab<ISceneEnt> GetPrefabForLogent(LogicEnt logent)
+        {
+            var factoryId = logent.GetFactoryId();
+
+            // TODO: this should be a separate method
+            IPrefab<ISceneEnt> prefab = m_factoryIdPrefabMap.ContainsKey(factoryId)
+                ? m_factoryIdPrefabMap[factoryId]
+                : m_defaultPrefab;
+            return prefab;
+        }
+
         private void Update()
         {
-            // TODO: this is too low level, refactor
-            var logentsToRemove = new List<LogicEnt>();
-
-            // TODO: rethink what is done where
-            var cameraData = CreateCameraDataArray();
-            var historyData = new List<HistoryData>();
+            var historyData = new List<HistoryData>(m_activeScentsMap.Count);
+            m_cameraState.NextLoop();
 
             foreach (var logent in m_activeScentsMap.Keys)
             {
                 ISceneEnt scent = m_activeScentsMap[logent];
-                EntityStatesAndSieves newData = GetPhaseStates(logent, scent);
+                EntityStatesAndSieves newData = GetPhaseStates(logent);
+
                 var dataPoint = new HistoryData
                 {
                     sceneEnt = scent,
@@ -109,132 +108,114 @@ namespace Hopper.ViewModel
 
                 if (logent.IsPlayer)
                 {
-                    // TODO: too low level, too much code
-                    // this needs to be a separate class, ideally
-                    AccumulateStates(cameraData, newData.states);
+                    m_cameraState.AccumulateStates(newData.states);
                 }
+            }
+
+            RemoveDeadLogents();
+            m_cameraState.AverageOutStates();
+            m_animator.Animate(historyData);
+        }
+
+        private void RemoveDeadLogents()
+        {
+            var logentsToRemove = new List<LogicEnt>();
+            foreach (var logent in m_activeScentsMap.Keys)
+            {
                 if (logent.IsDead)
                 {
                     logentsToRemove.Add(logent);
                 }
             }
-
             foreach (var logent in logentsToRemove)
             {
                 m_activeScentsMap.Remove(logent);
-                m_prevStates.Remove(logent);
-            }
-
-            FindMean(cameraData, m_players.Count);
-            m_animator.Animate(historyData, cameraData);
-        }
-
-        private Vector2 GetCenterBetweenPlayers()
-        {
-            var sum = new Vector2(0, 0);
-            foreach (var player in m_players)
-            {
-                sum += player.Pos;
-            }
-            return sum;
-        }
-
-        private Vector2[] CreateCameraDataArray()
-        {
-            var arr = new Vector2[World.NumPhases];
-            for (int i = 0; i < World.NumPhases; i++)
-            {
-                arr[i] = new Vector2(0, 0);
-            }
-            return arr;
-        }
-
-        private void AccumulateStates(Vector2[] accumulator, EntityState[] states)
-        {
-            for (int i = 0; i < accumulator.Length; i++)
-            {
-                accumulator[i] = accumulator[i] + states[i].pos;
             }
         }
 
-        private void FindMean(Vector2[] accumulator, int count)
+        private EntityStatesAndSieves GetPhaseStates(LogicEnt logent)
         {
-            for (int i = 0; i < accumulator.Length; i++)
-            {
-                accumulator[i] /= count;
-            }
-        }
-
-        private EntityStatesAndSieves GetPhaseStates(
-            LogicEnt logent, ISceneEnt scent)
-        {
-            return GetPhaseStates(
-                scent.Sieves,
-                logent.History.Updates,
-                logent.World.State.TimeStampPhaseLimit,
-                logent);
-        }
-
-        // It is assumed that sieves are sorted by weights
-        // TODO: change input params
-        private EntityStatesAndSieves GetPhaseStates(
-            IReadOnlyList<ISieve> sieves,
-            IReadOnlyList<UpdateInfo<EntityState>> updates,
-            IReadOnlyList<int> timestampPhaseLimits,
-            LogicEnt logent)
-        {
-            var result = new EntityStatesAndSieves();
-            result.states = new EntityState[World.NumPhases];
-            result.sieves = new ISieve[World.NumPhases];
-
             // construct the list of updates by phases
             // this is sort of necessary, but i sort of don't like it
-            // TODO: Refactor in a separate method
-            List<UpdateInfo<EntityState>>[] updatesByPhases =
+            var updatesByPhases = SplitUpdatesByPhases(
+                logent.History.Updates, logent.World.State.UpdateCountPhaseLimit);
+
+            return GetResultantStatesAndSieves(
+                GetPrefabForLogent(logent).Sieves, updatesByPhases);
+        }
+
+        private static EntityStatesAndSieves GetResultantStatesAndSieves(
+            IReadOnlyList<ISieve> sieves,
+            List<UpdateInfo<EntityState>>[] updatesByPhases)
+        {
+            var result = new EntityStatesAndSieves
+            {
+                states = new EntityState[World.NumPhases],
+                sieves = new ISieve[World.NumPhases]
+            };
+
+            // The first update always indicates the initial state. See History.
+            result.states[0] = updatesByPhases[0][0].stateAfter;
+
+            for (int phase = 0; phase < World.NumPhases; phase++)
+            {
+                if (updatesByPhases[phase].Count > 0)
+                {
+                    result.states[phase] = updatesByPhases[phase].Last().stateAfter;
+                }
+                else
+                {
+                    result.states[phase] = result.states[phase - 1];
+                }
+
+                result.sieves[phase] = SelectSieve(sieves, updatesByPhases[phase]);
+            }
+
+            return result;
+        }
+
+        private static ISieve SelectSieve(
+            IReadOnlyList<ISieve> sieves,
+            List<UpdateInfo<EntityState>> updates)
+        {
+            // update all sieves
+            foreach (var update in updates)
+            {
+                foreach (var sieve in sieves)
+                {
+                    sieve.Sieve(update.updateCode);
+                }
+            }
+
+            // take the first full sieve
+            var result = sieves.Find(sieve => sieve.IsFull);
+
+            // reset sieves
+            foreach (var sieve in sieves)
+                sieve.Reset();
+
+            return result;
+        }
+
+        private static List<UpdateInfo<EntityState>>[] SplitUpdatesByPhases(
+            IReadOnlyList<UpdateInfo<EntityState>> updates,
+            IReadOnlyList<int> timestampPhaseLimits)
+        {
+            List<UpdateInfo<EntityState>>[] result =
                 new List<UpdateInfo<EntityState>>[World.NumPhases];
 
             {
                 int i = 0;
                 for (int phase = 0; phase < World.NumPhases; phase++)
                 {
-                    updatesByPhases[phase] = new List<UpdateInfo<EntityState>>();
+                    result[phase] = new List<UpdateInfo<EntityState>>();
                     // go through updates of the current phase
                     while (i < updates.Count && updates[i].timeframe < timestampPhaseLimits[phase])
                     {
-                        updatesByPhases[phase].Add(updates[i]);
+                        result[phase].Add(updates[i]);
                         i++;
                     }
                 }
-            }
-
-            // TODO: Refactor in a method
-            for (int phase = 0; phase < World.NumPhases; phase++)
-            {
-                if (updatesByPhases[phase].Count > 0)
-                {
-                    result.states[phase] = updatesByPhases[phase].Last().stateAfter;
-                    m_prevStates[logent] = result.states[phase];
-                }
-                else
-                {
-                    result.states[phase] = m_prevStates[logent];
-                }
-
-                // update all sieves
-                foreach (var update in updatesByPhases[phase])
-                {
-                    foreach (var sieve in sieves)
-                    {
-                        sieve.Sieve(update.updateCode);
-                    }
-                }
-
-                // take the first full sieve
-                result.sieves[phase] = sieves.Find(sieve => sieve.IsFull);
-
-                // reset sieves
-                foreach (var sieve in sieves)
-                    sieve.Reset();
             }
 
             return result;

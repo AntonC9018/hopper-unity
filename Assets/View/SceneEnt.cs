@@ -1,36 +1,24 @@
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using Hopper.ViewModel;
 using UnityEngine;
 using Core.Utils.Vector;
+using HopperVector2 = Core.Utils.Vector.Vector2;
 
 namespace Hopper.View
 {
     public class SceneEnt : ISceneEnt, ICamera
     {
-        // TODO: do smth with this
-        public IReadOnlyList<ISieve> Sieves => m_sieves.AsReadOnly();
         public GameObject GameObject { protected get; set; }
-
-        private List<IViewSieve> m_sieves;
-        public void SetSieves(IList<IViewSieve> sieves)
-        {
-            m_sieves = sieves.ToList();
-            m_sieves.Sort((a, b) => a.Weight - b.Weight);
-        }
-
-        private Core.Utils.Vector.Vector2 m_prevPos;
+        private HopperVector2 m_prevPos;
+        private bool m_ignoreUpdates;
+        private HopperVector2 m_currentFinalState;
 
         public SceneEnt(GameObject gameObject)
         {
             GameObject = gameObject;
-            m_sieves = new List<IViewSieve>();
         }
 
         public SceneEnt()
         {
-            m_sieves = new List<IViewSieve>();
         }
 
         public virtual void ChangeOrientation(IntVector2 orientation)
@@ -45,7 +33,7 @@ namespace Hopper.View
             }
         }
 
-        public virtual void ChangePos(Core.Utils.Vector.Vector2 pos)
+        public virtual void ChangePos(HopperVector2 pos)
         {
             if (ReferenceEquals(m_prevPos, null))
             {
@@ -64,40 +52,45 @@ namespace Hopper.View
             GameObject.Destroy(GameObject);
         }
 
-        private Core.Utils.Vector.Vector2 m_prevFinalState;
-        private bool m_ignoreUpdates;
-
-        // TODO: maybe have a transition change separate function
-        // feed the data about the state and the sieve there
-        // update with just the animation info
-        public void Update(
-            Core.History.EntityState finalState,
-            ISieve sieve,
-            ViewModel.AnimationInfo animationInfo)
+        public void EnterPhase(
+            Core.History.EntityState finalState, ISieve sieve, ViewModel.AnimationInfo animationInfo)
         {
             if (m_ignoreUpdates)
             {
                 return;
             }
-            if (animationInfo.isFirstTimeInPhase)
+
+            if (sieve != null)
             {
-                m_prevPos = animationInfo.currentPhase > 0 ? m_prevFinalState : m_prevPos;
-                m_prevFinalState = finalState.pos;
-                if (sieve != null)
-                {
-                    if (((IViewSieve)sieve).AnimationCode == AnimationCode.Destroy)
-                    {
-                        Destroy();
-                    }
-                    // TODO: this should be scalable, obviously
-                    else if (((IViewSieve)sieve).AnimationCode == AnimationCode.Jump)
-                    {
-                        GameObject.GetComponent<Animator>().Play("Candace_Jump");
-                    }
-                }
+                var viewSieve = (IViewSieve)sieve;
+                StartAnimation(viewSieve.AnimationCode);
             }
-            ChangePos((finalState.pos - m_prevPos) * animationInfo.proportionIntoPhase + m_prevPos);
+
+            m_prevPos = animationInfo.currentPhase > 0 ? m_currentFinalState : m_prevPos;
+            m_currentFinalState = finalState.pos;
             ChangeOrientation(finalState.orientation);
+        }
+
+        private void StartAnimation(AnimationCode animationCode)
+        {
+            if (animationCode == AnimationCode.Destroy)
+            {
+                Destroy();
+            }
+            // TODO: this should be scalable, obviously
+            else if (animationCode == AnimationCode.Jump)
+            {
+                GameObject.GetComponent<Animator>().Play("Candace_Jump");
+            }
+        }
+
+        public void Update(ViewModel.AnimationInfo animationInfo)
+        {
+            if (m_ignoreUpdates)
+            {
+                return;
+            }
+            ChangePos(HopperVector2.Lerp(m_prevPos, m_currentFinalState, animationInfo.proportionIntoPhase));
         }
     }
 }

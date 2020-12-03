@@ -5,16 +5,7 @@ using Core.Utils.Vector;
 
 namespace Hopper.ViewModel
 {
-
     public delegate void TimerEventHandler(AnimationInfo info);
-
-    public class AnimationInfo
-    {
-        public bool isFirstTimeInPhase;
-        public int currentPhase;
-        public float proportionIntoPhase;
-        public int tickCount;
-    }
 
     public class ViewAnimator : IAnimator
     {
@@ -22,9 +13,7 @@ namespace Hopper.ViewModel
         private ITimer m_timer;
         private IEnumerable<HistoryData> m_currentData;
 
-        // TODO: this obviously needs an abstraction
-        private Vector2 m_prevCamPos;
-        private Vector2[] m_currentCameraData;
+        private CameraState m_cameraState;
 
         // TODO: think about the overlaying phases     
         // TODO: think about skipping phases without any updates or slurring ones
@@ -49,20 +38,21 @@ namespace Hopper.ViewModel
             m_totalTimePerIteration = m_phaseSpanMillis.Sum();
         }
 
-        public void SetupCamera(Vector2 cameraInitialPosition)
+        public void SetCamera(CameraState cameraState)
         {
-            m_camera.ChangePos(cameraInitialPosition);
-            m_prevCamPos = cameraInitialPosition;
+            m_camera.ChangePos(cameraState.m_prevCamPos);
+            m_cameraState = cameraState;
         }
 
-        public void Animate(IEnumerable<HistoryData> historyData, Core.Utils.Vector.Vector2[] cameraData)
+        public void Animate(IEnumerable<HistoryData> historyData)
         {
             m_currentPhase = 0;
             m_tickCount = 0;
             m_prevPhaseMillis = 0;
             m_firstTimeThisPhase = true;
+
             m_currentData = historyData;
-            m_currentCameraData = cameraData;
+
             m_timer.Start();
         }
 
@@ -75,34 +65,35 @@ namespace Hopper.ViewModel
             {
                 currentPhase = m_currentPhase,
                 proportionIntoPhase = proportionIntoPhase,
-                tickCount = m_tickCount,
-                isFirstTimeInPhase = m_firstTimeThisPhase
+                tickCount = m_tickCount
             };
 
             // potentially call a transition state on scene ents
             if (m_firstTimeThisPhase)
             {
-                if (m_currentPhase > 0)
-                {
-                    m_prevCamPos = m_currentCameraData[m_currentPhase - 1];
-                }
+                m_cameraState.EnterState(m_currentPhase);
             }
 
             foreach (var data in m_currentData)
             {
-                var state = data.entityStatesAndSieves.states[m_currentPhase];
-                var sieve = data.entityStatesAndSieves.sieves[m_currentPhase];
-                data.sceneEnt.Update(state, sieve, animationInfo);
+                if (m_firstTimeThisPhase)
+                {
+                    var state = data.entityStatesAndSieves.states[m_currentPhase];
+                    var sieve = data.entityStatesAndSieves.sieves[m_currentPhase];
+                    data.sceneEnt.EnterPhase(state, sieve, animationInfo);
+                }
+                else
+                {
+                    data.sceneEnt.Update(animationInfo);
+                }
             }
 
-            m_camera.ChangePos((m_currentCameraData[m_currentPhase] - m_prevCamPos) * proportionIntoPhase
-                + m_prevCamPos);
-
+            var cameraDelta = m_cameraState.GetTransitionVector(m_currentPhase) * proportionIntoPhase;
+            m_camera.ChangePos(m_cameraState.m_prevCamPos + cameraDelta);
 
             if (IsPastLastPhase(millis))
             {
                 m_timer.Stop();
-                m_prevCamPos = m_currentCameraData[m_currentPhase];
             }
             else
             {
