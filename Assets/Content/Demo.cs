@@ -59,14 +59,17 @@ namespace Hopper
             // Redirects System.Console.WriteLine to unity's console. By default, it goes to debug logs.
             Core.Utils.UnitySystemConsoleRedirector.Redirect();
 
+            CreateItems();
+            CreateWorldEvents();
+
+            m_factories = new Factories();
+
             // Generates the map
             var generator = CreateRunGenerator();
 
             m_world = new World(generator.grid.GetLength(1), generator.grid.GetLength(0));
-
-            CreateItems();
-            m_factories = new Factories();
             m_world.m_pools.UsePools(itemPool: CreateItemPool(), entityPool: new ThrowawayPool());
+            m_world.InitializeWorldEvents();
 
             // Create view_model and hook it up to watch the world events
             SetupViewModel(m_factories, m_world);
@@ -77,7 +80,7 @@ namespace Hopper
                 {
                     if (generator.grid[x, y] != Generator.Mark.EMPTY)
                     {
-                        TileStuff.FireCreatedEvent(new IntVector2(x, y));
+                        TileStuff.CreatedEventPath.Fire(m_world, new IntVector2(x, y));
 
                         if (generator.grid[x, y] == Generator.Mark.WALL)
                         {
@@ -132,7 +135,7 @@ namespace Hopper
                items or draw them from specified in the config pools and gold.
                See how the factory is defined.
             */
-            m_world.SpawnEntity(m_factories.chestFactory, new IntVector2(center.x + 1, center.y + 1));
+            // m_world.SpawnEntity(m_factories.chestFactory, new IntVector2(center.x + 1, center.y + 1));
 
             /* Water blocks stop one movement, attack or dig. */
             // m_world.SpawnEntity(m_factories.waterFactory, new IntVector2(center.x + 1, center.y + 1));
@@ -238,6 +241,16 @@ namespace Hopper
 
             // Reference this item once so that it is added to the registry
             var _ = Bow.DefaultItem;
+        }
+
+        public void CreateWorldEvents()
+        {
+            var _ = Explosion.EventPath;
+            var __ = Laser.EventPath;
+            var ___ = TileStuff.CreatedEventPath;
+
+            var worldEventRegistry = Registry.Default.GetKindRegistry<IWorldEvent>();
+            worldEventRegistry.SetServerMap(worldEventRegistry.PackModMap());
         }
 
         private Generator CreateRunGenerator()

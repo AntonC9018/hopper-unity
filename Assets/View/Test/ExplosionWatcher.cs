@@ -21,10 +21,7 @@ namespace Hopper.View
 
         public void Watch(World world, View_Model vm)
         {
-            Explosion.ExplosionEvent += (pos, w) =>
-            {
-                if (w == world) AddExplosion(pos);
-            };
+            Explosion.EventPath.Subscribe(world, AddExplosion);
             world.State.EndOfLoopEvent += UpdateGoingExplosions;
         }
 

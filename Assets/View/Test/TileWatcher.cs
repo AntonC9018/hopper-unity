@@ -11,12 +11,7 @@ namespace Hopper.View
     // TODO: move this static class to wherever the generator output is realized
     public static class TileStuff
     {
-        public static event System.Action<IntVector2> CreatedEvent;
-
-        public static void FireCreatedEvent(IntVector2 pos)
-        {
-            CreatedEvent?.Invoke(pos);
-        }
+        public static readonly WorldEventPath<IntVector2> CreatedEventPath = new WorldEventPath<IntVector2>();
     }
 
     public class TileWatcher : IWatcher
@@ -32,7 +27,7 @@ namespace Hopper.View
 
         public void Watch(World world, View_Model vm)
         {
-            TileStuff.CreatedEvent += AddTile;
+            TileStuff.CreatedEventPath.Subscribe(world, AddTile);
         }
 
         private void AddTile(IntVector2 pos)

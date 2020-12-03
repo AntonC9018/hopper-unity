@@ -29,10 +29,7 @@ namespace Hopper.View
 
         public void Watch(World world, View_Model vm)
         {
-            Test.Laser.LaserEvent += (w, i) =>
-            {
-                if (w == world) AddBeam(i);
-            };
+            Test.Laser.EventPath.Subscribe(world, AddBeam);
             world.State.StartOfLoopEvent += UpdateBeams;
         }
 
