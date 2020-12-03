@@ -132,7 +132,7 @@ namespace Hopper
                items or draw them from specified in the config pools and gold.
                See how the factory is defined.
             */
-            // m_world.SpawnEntity(m_factories.chestFactory, new IntVector2(center.x + 1, center.y + 1));
+            m_world.SpawnEntity(m_factories.chestFactory, new IntVector2(center.x + 1, center.y + 1));
 
             /* Water blocks stop one movement, attack or dig. */
             // m_world.SpawnEntity(m_factories.waterFactory, new IntVector2(center.x + 1, center.y + 1));
@@ -227,10 +227,12 @@ namespace Hopper
             );
 
             m_shovelItem = new ModularShovel(
+                new ItemMetadata("Base_Shovel"),
                 shovelTargetProvider
             );
 
             m_knifeItem = new ModularWeapon(
+                new ItemMetadata("Base_Knife"),
                 knifeTargetProvider
             );
 
