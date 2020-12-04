@@ -24,7 +24,7 @@ namespace Hopper
             wallFactory = new EntityFactory<Wall>()
                 .AddBehavior<Attackable>()
                 .Retouch(
-                    Core.Retouchers.Attackableness.Constant(AtkCondition.NEVER)
+                    Core.Retouchers.Attackableness.Constant(Attackness.NEVER)
                 )
                 .AddBehavior<Damageable>();
 
