@@ -1,4 +1,5 @@
-﻿using Core;
+﻿using System.Collections.Generic;
+using Core;
 using Core.Generation;
 using Core.History;
 using Core.Items;
@@ -40,6 +41,7 @@ namespace Hopper
         private World m_world;
         private ModularShovel m_shovelItem;
         private ModularWeapon m_knifeItem;
+        private ModularWeapon m_spearItem;
         private View_Model m_viewModel;
         private InputManager m_inputManager;
         private Factories m_factories;
@@ -106,11 +108,15 @@ namespace Hopper
             // player.Stats.GetRaw(Push.Source.Resistance.Path)[BounceTrap.BounceSource.Id] = 3;
 
             /* A blocking trap. When you step on it, it closes you in. */
-            // m_world.SpawnEntity(BlockingTrap.CreateFactory(), player.Pos + IntVector2.Right);
+            // m_world.SpawnEntity(m_factories.barrierFactory, player.Pos + IntVector2.Right);
+
+            /* A dummy you can attack but it wouldn't take damage */
+            // m_world.SpawnEntity(Test.Dummy.Factory, player.Pos + IntVector2.Right);
 
             /* Knife and Shivel basic equipment. */
-            player.Inventory.Equip(m_knifeItem);
-            player.Inventory.Equip(m_shovelItem);
+            // player.Inventory.Equip(m_knifeItem);
+            // player.Inventory.Equip(m_shovelItem);
+            // player.Inventory.Equip(m_spearItem);
 
             /* Bow. X toggle charge, vector input to shoot */
             // player.Inventory.Equip(Bow.DefaultItem);
@@ -219,8 +225,6 @@ namespace Hopper
 
         private void CreateItems()
         {
-            var shovelTargetProvider = TargetProvider.CreateSimpleDig();
-
             var knifeTargetProvider = TargetProvider.CreateAtk(
                 Pattern.Default,
                 Handlers.GeneralChain
@@ -228,12 +232,33 @@ namespace Hopper
 
             m_shovelItem = new ModularShovel(
                 new ItemMetadata("Base_Shovel"),
-                shovelTargetProvider
+                TargetProvider.SimpleDig
             );
 
             m_knifeItem = new ModularWeapon(
                 new ItemMetadata("Base_Knife"),
                 knifeTargetProvider
+            );
+
+            m_spearItem = new ModularWeapon(
+                new ItemMetadata("Base_Spear"),
+                TargetProvider.CreateAtk(
+                    new Pattern(
+                        new Piece
+                        {
+                            dir = IntVector2.Right,
+                            pos = IntVector2.Right,
+                            reach = null,
+                        },
+                        new Piece
+                        {
+                            dir = IntVector2.Right,
+                            pos = IntVector2.Right * 2,
+                            reach = new List<int>(1) { 1 }
+                        }
+                    ),
+                    Handlers.GeneralChain
+                )
             );
 
             // Reference this item once so that it is added to the registry
