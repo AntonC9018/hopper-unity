@@ -26,8 +26,8 @@ namespace Hopper.View
             var obj = GameObject.Instantiate(m_obj);
             var scent = new T();
             scent.GameObject = obj;
-            scent.ChangePos(pos);
-            scent.ChangeOrientation(orientation);
+            scent.SetInitialPosition(pos);
+            scent.SetInitialOrientation(orientation);
             return scent;
         }
     }

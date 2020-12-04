@@ -39,7 +39,7 @@ namespace Hopper.ViewModel
 
         public void SetCamera(CameraState cameraState)
         {
-            m_camera.ChangePos(cameraState.m_prevCamPos);
+            m_camera.SetInitialPosition(cameraState.m_prevCamPos);
             m_cameraState = cameraState;
         }
 

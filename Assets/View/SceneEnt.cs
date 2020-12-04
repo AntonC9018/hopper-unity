@@ -21,6 +21,11 @@ namespace Hopper.View
         {
         }
 
+        public void SetInitialOrientation(IntVector2 pos)
+        {
+            ChangeOrientation(pos);
+        }
+
         public virtual void ChangeOrientation(IntVector2 orientation)
         {
             if (orientation.x != 0)
@@ -33,12 +38,14 @@ namespace Hopper.View
             }
         }
 
+        public void SetInitialPosition(HopperVector2 pos)
+        {
+            m_prevPos = pos;
+            ChangePos(pos);
+        }
+
         public virtual void ChangePos(HopperVector2 pos)
         {
-            if (ReferenceEquals(m_prevPos, null))
-            {
-                m_prevPos = pos;
-            }
             GameObject.transform.position = new Vector3(
                 pos.x * Reference.Width,
                 -pos.y * Reference.Width,
