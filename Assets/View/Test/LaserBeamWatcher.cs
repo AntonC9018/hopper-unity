@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Hopper.Core;
 using Hopper.ViewModel;
-using Test;
+using Hopper.Test_Content;
 using UnityEngine;
 
 namespace Hopper.View
@@ -28,7 +28,7 @@ namespace Hopper.View
 
         public void Watch(World world, View_Model vm)
         {
-            Test.Laser.EventPath.Subscribe(world, AddBeam);
+            Hopper.Test_Content.Laser.EventPath.Subscribe(world, AddBeam);
             world.State.StartOfLoopEvent += UpdateBeams;
         }
 

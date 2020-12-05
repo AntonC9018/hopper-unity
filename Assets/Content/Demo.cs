@@ -9,7 +9,7 @@ using Hopper.Core.Utils.Vector;
 using Hopper.View;
 using Hopper.ViewModel;
 
-using Test;
+using Hopper.Test_Content;
 
 using UnityEngine;
 
@@ -111,7 +111,7 @@ namespace Hopper
             // m_world.SpawnEntity(m_factories.barrierFactory, player.Pos + IntVector2.Right);
 
             /* A dummy you can attack but it wouldn't take damage */
-            // m_world.SpawnEntity(Test.Dummy.Factory, player.Pos + IntVector2.Right);
+            // m_world.SpawnEntity(Hopper.Test_Content.Dummy.Factory, player.Pos + IntVector2.Right);
 
             /* Knife and Shivel basic equipment. */
             // player.Inventory.Equip(m_knifeItem);

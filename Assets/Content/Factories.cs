@@ -2,7 +2,7 @@ using Hopper.Core;
 using Hopper.Core.Behaviors;
 using Hopper.Core.Items;
 using Hopper.Core.Targeting;
-using Test;
+using Hopper.Test_Content;
 
 namespace Hopper
 {
@@ -28,7 +28,7 @@ namespace Hopper
                 )
                 .AddBehavior<Damageable>();
 
-            enemyFactory = Test.Skeleton.Factory;
+            enemyFactory = Hopper.Test_Content.Skeleton.Factory;
 
             chestFactory = new EntityFactory<Entity>()
                 .AddBehavior<Interactable>(

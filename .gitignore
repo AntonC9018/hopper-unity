@@ -72,4 +72,5 @@ crashlytics-build.properties
 
 # Core is a separate project
 /[Aa]ssets/Core/
+Hopper-Test
 .idea
