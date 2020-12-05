@@ -1,7 +1,7 @@
-using Core;
-using Core.Behaviors;
-using Core.Items;
-using Core.Targeting;
+using Hopper.Core;
+using Hopper.Core.Behaviors;
+using Hopper.Core.Items;
+using Hopper.Core.Targeting;
 using Test;
 
 namespace Hopper
@@ -24,7 +24,7 @@ namespace Hopper
             wallFactory = new EntityFactory<Wall>()
                 .AddBehavior<Attackable>()
                 .Retouch(
-                    Core.Retouchers.Attackableness.Constant(Attackness.NEVER)
+                    Hopper.Core.Retouchers.Attackableness.Constant(Attackness.NEVER)
                 )
                 .AddBehavior<Damageable>();
 

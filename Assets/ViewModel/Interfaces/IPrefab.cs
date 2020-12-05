@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using Core.History;
-using Core.Utils.Vector;
+using Hopper.Core.History;
+using Hopper.Core.Utils.Vector;
 
 namespace Hopper.ViewModel
 {

@@ -1,6 +1,6 @@
 using Hopper.ViewModel;
 using UnityEngine;
-using Core.Utils.Vector;
+using Hopper.Core.Utils.Vector;
 
 namespace Hopper.View
 {

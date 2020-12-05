@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
-using Core;
-using Core.History;
+using Hopper.Core;
+using Hopper.Core.History;
 
 public class CandaceAnimationManager : MonoBehaviour    //WARNING: EXTREMELY ROUGH SCRIPT
 {

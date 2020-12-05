@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using Core.Utils.Vector;
+using Hopper.Core.Utils.Vector;
 
 namespace Hopper.ViewModel
 {
     public interface ISceneEnt
     {
-        void EnterPhase(Core.History.EntityState finalState, ISieve sieve, AnimationInfo animationInfo);
+        void EnterPhase(Hopper.Core.History.EntityState finalState, ISieve sieve, AnimationInfo animationInfo);
         void Update(AnimationInfo animationInfo);
         void SetInitialPosition(Vector2 pos);
         void ChangePos(Vector2 pos);

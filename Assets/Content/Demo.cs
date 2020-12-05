@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using Core;
-using Core.Generation;
-using Core.History;
-using Core.Items;
-using Core.Targeting;
-using Core.Utils.Vector;
+using Hopper.Core;
+using Hopper.Core.Generation;
+using Hopper.Core.History;
+using Hopper.Core.Items;
+using Hopper.Core.Targeting;
+using Hopper.Core.Utils.Vector;
 
 using Hopper.View;
 using Hopper.ViewModel;
@@ -59,7 +59,7 @@ namespace Hopper
             m_inputManager = new InputManager();
 
             // Redirects System.Console.WriteLine to unity's console. By default, it goes to debug logs.
-            Core.Utils.UnitySystemConsoleRedirector.Redirect();
+            Hopper.Core.Utils.UnitySystemConsoleRedirector.Redirect();
 
             CreateItems();
             CreateWorldEvents();

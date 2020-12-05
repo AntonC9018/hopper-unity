@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Core.Utils.Vector;
+using Hopper.Core.Utils.Vector;
 
 namespace Hopper.ViewModel
 {

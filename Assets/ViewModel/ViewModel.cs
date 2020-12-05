@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
-using Core;
-using Core.Utils;
-using Core.History;
-using LogicEnt = Core.Entity;  // LogicEnt = Logent = Logical Entity
+using Hopper.Core;
+using Hopper.Core.Utils;
+using Hopper.Core.History;
+using LogicEnt = Hopper.Core.Entity;  // LogicEnt = Logent = Logical Entity
 
 namespace Hopper.ViewModel
 {

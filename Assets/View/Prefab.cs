@@ -1,8 +1,8 @@
 using Hopper.ViewModel;
 using UnityEngine;
-using Core.Utils.Vector;
+using Hopper.Core.Utils.Vector;
 using System.Collections.Generic;
-using Core.History;
+using Hopper.Core.History;
 using System.Linq;
 
 namespace Hopper.View

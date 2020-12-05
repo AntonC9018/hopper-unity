@@ -1,7 +1,7 @@
 using Hopper.ViewModel;
 using UnityEngine;
-using Core.Utils.Vector;
-using HopperVector2 = Core.Utils.Vector.Vector2;
+using Hopper.Core.Utils.Vector;
+using HopperVector2 = Hopper.Core.Utils.Vector.Vector2;
 
 namespace Hopper.View
 {
@@ -60,7 +60,7 @@ namespace Hopper.View
         }
 
         public void EnterPhase(
-            Core.History.EntityState finalState, ISieve sieve, ViewModel.AnimationInfo animationInfo)
+            Hopper.Core.History.EntityState finalState, ISieve sieve, ViewModel.AnimationInfo animationInfo)
         {
             if (m_ignoreUpdates)
             {

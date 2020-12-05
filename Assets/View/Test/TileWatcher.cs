@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using Core;
+using Hopper.Core;
 using Hopper.ViewModel;
-using Core.Utils.Vector;
+using Hopper.Core.Utils.Vector;
 
 namespace Hopper.View
 {

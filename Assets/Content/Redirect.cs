@@ -10,7 +10,7 @@ using UnityEngine;
 /// <author>
 /// Jackson Dunstan, http://jacksondunstan.com/articles/2986
 /// </author>
-namespace Core.Utils
+namespace Hopper.Core.Utils
 {
     public static class UnitySystemConsoleRedirector
     {

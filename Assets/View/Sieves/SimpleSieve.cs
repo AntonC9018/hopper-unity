@@ -1,7 +1,7 @@
-using Core.History;
+using Hopper.Core.History;
 using Hopper.ViewModel;
 using UnityEngine;
-using Core.Utils.Vector;
+using Hopper.Core.Utils.Vector;
 
 namespace Hopper.View
 {

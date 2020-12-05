@@ -1,4 +1,4 @@
-using Core.History;
+using Hopper.Core.History;
 using Hopper.ViewModel;
 
 namespace Hopper.View
