@@ -1,4 +1,4 @@
-using Hopper.Core.Utils.Vector;
+using Hopper.Utils.Vector;
 using UnityEngine;
 
 namespace Hopper.View

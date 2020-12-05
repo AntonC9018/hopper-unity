@@ -1,7 +1,7 @@
 using Hopper.ViewModel;
 using UnityEngine;
-using Hopper.Core.Utils.Vector;
-using HopperVector2 = Hopper.Core.Utils.Vector.Vector2;
+using Hopper.Utils.Vector;
+using HopperVector2 = Hopper.Utils.Vector.Vector2;
 
 namespace Hopper.View
 {

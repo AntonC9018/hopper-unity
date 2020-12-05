@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Hopper.Core;
-using Hopper.Core.Utils;
+using Hopper.Utils;
 using Hopper.Core.History;
 using LogicEnt = Hopper.Core.Entity;  // LogicEnt = Logent = Logical Entity
 

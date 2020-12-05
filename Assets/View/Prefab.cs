@@ -1,6 +1,6 @@
 using Hopper.ViewModel;
 using UnityEngine;
-using Hopper.Core.Utils.Vector;
+using Hopper.Utils.Vector;
 using System.Collections.Generic;
 using Hopper.Core.History;
 using System.Linq;

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Hopper.Core;
 using Hopper.Core.History;
-using Hopper.Core.Utils.Vector;
+using Hopper.Utils.Vector;
 
 namespace Hopper.ViewModel
 {

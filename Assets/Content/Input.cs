@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Hopper.Core;
 using Hopper.Core.Behaviors;
-using Hopper.Core.Utils.Vector;
+using Hopper.Utils.Vector;
 using UnityEngine;
 
 namespace Hopper

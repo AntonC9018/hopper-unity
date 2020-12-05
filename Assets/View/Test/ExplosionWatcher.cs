@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Hopper.Core;
-using Hopper.Core.Utils.Vector;
+using Hopper.Utils.Vector;
 using Hopper.ViewModel;
 using Hopper.Test_Content;
 using UnityEngine;
