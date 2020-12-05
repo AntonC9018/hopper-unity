@@ -14,6 +14,8 @@ This project binds Logic with Graphics. See a demo in the file `Assets/Content/D
 
 3. Clone the repo with the model, using the command `git clone https://github.com/AntonC9018/hopper.cs FOLDER_NAME/Assets/Core`.
 
+Similarly, use `git pull origin master` to get the newest version of code for the model.
+
 Now you should be able to locate the project folder from unity and open the project.
 
 After that, I recommend you make yourself a copy of my scene, since it is literally impossible to merge scenes in Unity via github without completely ditching one version of the two.
