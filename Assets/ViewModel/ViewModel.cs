@@ -205,15 +205,18 @@ namespace Hopper.ViewModel
                 new List<UpdateInfo<EntityState>>[World.NumPhases];
 
             {
+                // patch up the control state
+                updates[0].stateAfter.timeframe = -1;
+
                 int i = 0;
                 for (int phase = 0; phase < World.NumPhases; phase++)
                 {
                     result[phase] = new List<UpdateInfo<EntityState>>();
+
                     // go through updates of the current phase
-                    while (i < updates.Count && updates[i].timeframe < timestampPhaseLimits[phase])
+                    while (i < updates.Count && updates[i].stateAfter.timeframe < timestampPhaseLimits[phase])
                     {
-                        result[phase].Add(updates[i]);
-                        i++;
+                        result[phase].Add(updates[i++]);
                     }
                 }
             }

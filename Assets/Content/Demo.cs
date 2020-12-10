@@ -86,7 +86,7 @@ namespace Hopper
 
                         if (generator.grid[x, y] == Generator.Mark.WALL)
                         {
-                            m_world.SpawnEntity(m_factories.wallFactory, new IntVector2(x, y));
+                            // m_world.SpawnEntity(m_factories.wallFactory, new IntVector2(x, y));
                         }
                     }
                 }
@@ -166,11 +166,11 @@ namespace Hopper
                 new PoolItem(Bombing.item_x3.Id, 20)
             };
 
-            var pool = Pool.CreateNormal<IItem>();
+            var pool = Pool.CreateNormal();
 
-            pool.Add("zone1/weapons", items[0]);
-            pool.Add("zone1/shovels", items[1]);
-            pool.Add("zone1/stuff", items[2]);
+            pool.AddItemToSubpool("zone1/weapons", items[0]);
+            pool.AddItemToSubpool("zone1/shovels", items[1]);
+            pool.AddItemToSubpool("zone1/stuff", items[2]);
             // pool.Add("zone1/stuff", items[3]);
 
             return pool;
