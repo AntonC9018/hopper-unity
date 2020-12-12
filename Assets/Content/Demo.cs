@@ -14,6 +14,10 @@ using Hopper.Test_Content;
 using UnityEngine;
 using Hopper.Core.Retouchers;
 using Hopper.Core.Stats.Basic;
+using Hopper.Test_Content.Explosion;
+using Hopper.Core.Mods;
+using Hopper.Test;
+using Hopper.Test_Content.Trap;
 
 namespace Hopper
 {
@@ -40,12 +44,8 @@ namespace Hopper
         public GameObject defaultPrefab;
 
         private World m_world;
-        private ModularShovel m_shovelItem;
-        private ModularWeapon m_knifeItem;
-        private ModularWeapon m_spearItem;
         private View_Model m_viewModel;
         private InputManager m_inputManager;
-        private Factories m_factories;
 
         private void Update()
         {
@@ -55,28 +55,6 @@ namespace Hopper
             }
         }
 
-        private Registry SetupRegistry()
-        {
-            Registry registry = new Registry();
-            CreateItems(registry);
-            CreateWorldEvents(registry);
-
-            var retouchers = new CoreRetouchers();
-
-            // // Adds the core retouchers to the given registry
-            retouchers.RegisterAll(registry);
-
-            // // Adds the basic stats to the given registry
-            BasicStats.Init(registry);
-
-            m_factories = new Factories(registry, retouchers);
-
-            // The content + kind setup phase is done. Run the patching phase.
-            // After this, the phase is the Instance phase, when no new kinds can be added.
-            registry.RunPatching();
-            return registry;
-        }
-
         private void Start()
         {
             m_inputManager = new InputManager();
@@ -84,17 +62,24 @@ namespace Hopper
             // Redirects System.Console.WriteLine to unity's console. By default, it goes to debug logs.
             Hopper.Utils.UnitySystemConsoleRedirector.Redirect();
 
-            var registry = SetupRegistry();
+            var modManager = new ModManager();
+            modManager.Add<TestMod>();
+            modManager.Add<DemoMod>();
+            var registry = modManager.RegisterAll();
+
+            var demoMod = registry.ModContent.Get<DemoMod>();
+            var testMod = registry.ModContent.Get<TestMod>();
+            var coreMod = registry.ModContent.Get<CoreMod>();
 
             // Generates the map
             var generator = CreateRunGenerator();
 
             m_world = new World(generator.grid.GetLength(1), generator.grid.GetLength(0), registry);
-            m_world.m_pools.UsePools(itemPool: CreateItemPool(), entityPool: new ThrowawayPool());
+            m_world.m_pools.UsePools(itemPool: CreateItemPool(demoMod), entityPool: new ThrowawayPool());
             m_world.InitializeWorldEvents();
 
             // Create view_model and hook it up to watch the world events
-            SetupViewModel(m_factories, m_world);
+            SetupViewModel(registry.ModContent, m_world);
 
             for (int y = 0; y < generator.grid.GetLength(1); y++)
             {
@@ -114,35 +99,35 @@ namespace Hopper
 
             var center = generator.rooms[0].Center.Round();
 
-            var player = m_world.SpawnPlayer(m_factories.playerFactory, center);
+            var player = m_world.SpawnPlayer(demoMod.PlayerFactory, center);
 
             /* Bounce trap and a wall. */
-            // m_world.SpawnEntity(m_factories.trapFactory, center + IntVector2.Right, IntVector2.Right);
-            // m_world.SpawnEntity(m_factories.wallFactory, center + IntVector2.Right * 2);
+            // m_world.SpawnEntity(testMod.Trap.BounceTrapFactory, center + IntVector2.Right, IntVector2.Right);
+            // m_world.SpawnEntity(demoMod.WallFactory, center + IntVector2.Right * 2);
 
             /* Two bounce traps in a row. */
-            // m_world.SpawnEntity(m_factories.trapFactory, center + IntVector2.Right, IntVector2.Right);
-            // m_world.SpawnEntity(trapFactory, center + IntVector2.Right * 2, IntVector2.Left);
+            // m_world.SpawnEntity(testMod.Trap.BounceTrapFactory, center + IntVector2.Right, IntVector2.Right);
+            // m_world.SpawnEntity(testMod.Trap.BounceTrapFactory, center + IntVector2.Right * 2, IntVector2.Left);
 
             /* Uncomment to disable bouncing for player. */
-            // player.Stats.GetRaw(Push.Source.Resistance.Path)[BounceTrap.BounceSource.Id] = 3;
+            // player.Stats.GetRaw(Push.Source.Resistance.Path)[Bounce.Source.GetId(registry)] = 3;
 
             /* A blocking trap. When you step on it, it closes you in. */
-            // m_world.SpawnEntity(m_factories.barrierFactory, player.Pos + IntVector2.Right);
+            // m_world.SpawnEntity(testMod.Floor.BlockingTrapFactory, player.Pos + IntVector2.Right);
 
             /* A dummy you can attack but it wouldn't take damage */
-            // m_world.SpawnEntity(Hopper.Test_Content.Dummy.Factory, player.Pos + IntVector2.Right);
+            m_world.SpawnEntity(testMod.Mob.DummyFactory, player.Pos + IntVector2.Right);
 
-            /* Knife and Shivel basic equipment. */
-            // player.Inventory.Equip(m_knifeItem);
-            // player.Inventory.Equip(m_shovelItem);
-            // player.Inventory.Equip(m_spearItem);
+            /* Knife and Shovel basic equipment. */
+            // player.Inventory.Equip(demoMod.KnifeItem);
+            // player.Inventory.Equip(demoMod.ShovelItem);
+            // player.Inventory.Equip(demoMod.SpearItem);
 
             /* Bow. X toggle charge, vector input to shoot */
-            // player.Inventory.Equip(Bow.DefaultItem);
+            // player.Inventory.Equip(testMod.Item.DefaultBow);
 
             /* 10000 bombs. `Space` to use. */
-            // player.Inventory.Equip(new PackedItem(Bombing.item, 10000));
+            // player.Inventory.Equip(new PackedItem(new ItemMetadata("bombs"), testMod.Bomb.item, 10000));
 
             /* Knippers (explody boys). */
             // m_world.SpawnEntity(Knipper.Factory, new IntVector2(center.x + 4, center.y));
@@ -176,12 +161,12 @@ namespace Hopper
             // FreezeStatus.Status.TryApply(player, new FreezeData(), FreezeStat.Path.DefaultFile);
         }
 
-        private ISuperPool CreateItemPool()
+        private ISuperPool CreateItemPool(DemoMod mod)
         {
             PoolItem[] items = new[]
             {
-                new PoolItem(m_knifeItem.Id, 1),
-                new PoolItem(m_shovelItem.Id, 1)
+                new PoolItem(mod.KnifeItem.Id, 1),
+                new PoolItem(mod.ShovelItem.Id, 1)
                 // new PoolItem(Bombing.item.Id, 1),
                 // new PoolItem(Bombing.item_x3.Id, 20)
             };
@@ -197,8 +182,12 @@ namespace Hopper
             // return pool.Copy();
         }
 
-        private void SetupViewModel(Factories factories, World world)
+        private void SetupViewModel(ModsContent mods, World world)
         {
+            var coreMod = mods.Get<CoreMod>();
+            var testMod = mods.Get<TestMod>();
+            var demoMod = mods.Get<DemoMod>();
+
             var destroyOnDeathSieve = new SimpleSieve(AnimationCode.Destroy, UpdateCode.dead);
             var playerJumpSieve = new SimpleSieve(AnimationCode.Jump, UpdateCode.move_do);
 
@@ -207,32 +196,34 @@ namespace Hopper
 
             m_viewModel = new View_Model(animator);
             m_viewModel.SetDefaultPrefab(new Prefab<SceneEnt>(defaultPrefab, destroyOnDeathSieve));
-            m_viewModel.SetPrefabForFactory(factories.playerFactory.Id,
+            m_viewModel.SetPrefabForFactory(demoMod.PlayerFactory.Id,
                 new Prefab<SceneEnt>(playerPrefab, destroyOnDeathSieve, playerJumpSieve));
-            m_viewModel.SetPrefabForFactory(factories.enemyFactory.Id,
+            m_viewModel.SetPrefabForFactory(testMod.Mob.SkeletonFactory.Id,
                 new Prefab<SceneEnt>(enemyPrefab, destroyOnDeathSieve));
-            m_viewModel.SetPrefabForFactory(factories.wallFactory.Id,
+            m_viewModel.SetPrefabForFactory(demoMod.WallFactory.Id,
                 new Prefab<SceneEnt>(wallPrefab, destroyOnDeathSieve));
-            m_viewModel.SetPrefabForFactory(factories.chestFactory.Id,
+            m_viewModel.SetPrefabForFactory(demoMod.ChestFactory.Id,
                 new Prefab<SceneEnt>(chestPrefab, destroyOnDeathSieve));
-            // m_viewModel.SetPrefabForFactory(BombEntity.Factory.Id,
-            // new Prefab<SceneEnt>(bombPrefab, destroyOnDeathSieve));
-            // m_viewModel.SetPrefabForFactory(DroppedItem.Factory.Id,
-            // new Prefab<RegularRotationSceneEnt>(droppedItemPrefab, destroyOnDeathSieve));
-            // m_viewModel.SetPrefabForFactory(factories.waterFactory.Id,
-            //     new Prefab<SceneEnt>(waterPrefab, destroyOnDeathSieve));
-            // m_viewModel.SetPrefabForFactory(factories.iceFactory.Id,
-            //     new Prefab<SceneEnt>(icePrefab, destroyOnDeathSieve));
-            // m_viewModel.SetPrefabForFactory(factories.trapFactory.Id,
-            //     new Prefab<SceneEnt>(bounceTrapPrefab, destroyOnDeathSieve));
-            m_viewModel.SetPrefabForFactory(factories.barrierFactory.Id,
+            m_viewModel.SetPrefabForFactory(testMod.Bomb.bombFactory.Id,
+                new Prefab<SceneEnt>(bombPrefab, destroyOnDeathSieve));
+            m_viewModel.SetPrefabForFactory(coreMod.DroppedItemFactory.Id,
+                new Prefab<RegularRotationSceneEnt>(droppedItemPrefab, destroyOnDeathSieve));
+            m_viewModel.SetPrefabForFactory(testMod.Floor.WaterFactory.Id,
+                new Prefab<SceneEnt>(waterPrefab, destroyOnDeathSieve));
+            m_viewModel.SetPrefabForFactory(testMod.Floor.IceFloorFactory.Id,
+                new Prefab<SceneEnt>(icePrefab, destroyOnDeathSieve));
+            m_viewModel.SetPrefabForFactory(testMod.Trap.BounceTrapFactory.Id,
+                new Prefab<SceneEnt>(bounceTrapPrefab, destroyOnDeathSieve));
+            m_viewModel.SetPrefabForFactory(testMod.Wall.BarrierFactory.Id,
                 new Prefab<RegularRotationSceneEnt>(barrierPrefab, destroyOnDeathSieve));
-            // m_viewModel.SetPrefabForFactory(Knipper.Factory.Id,
-            //     new Prefab<SceneEnt>(knipperPrefab, destroyOnDeathSieve));
-            // m_viewModel.SetPrefabForFactory(TestBoss.Factory.Id,
-            //     new Prefab<SceneEnt>(testBossPrefab, destroyOnDeathSieve));
-            // m_viewModel.SetPrefabForFactory(TestBoss.Whelp.Factory.Id,
-            //     new Prefab<SceneEnt>(whelpPrefab, destroyOnDeathSieve));
+            m_viewModel.SetPrefabForFactory(testMod.Floor.RealBarrierFactory.Id,
+                new Prefab<RegularRotationSceneEnt>(barrierPrefab, destroyOnDeathSieve));
+            m_viewModel.SetPrefabForFactory(testMod.Mob.KnipperFactory.Id,
+                new Prefab<SceneEnt>(knipperPrefab, destroyOnDeathSieve));
+            m_viewModel.SetPrefabForFactory(testMod.Boss.TestBossFactory.Id,
+                new Prefab<SceneEnt>(testBossPrefab, destroyOnDeathSieve));
+            m_viewModel.SetPrefabForFactory(testMod.Boss.WhelpFactory.Id,
+                new Prefab<SceneEnt>(whelpPrefab, destroyOnDeathSieve));
 
             var explosionWatcher = new ExplosionWatcher(explosionPrefab);
             var laserBeamWatcher = new LaserBeamWatcher(laserBeamHeadPrefab, laserBeamBodyPrefab);
@@ -241,61 +232,6 @@ namespace Hopper
             Reference.Width = playerPrefab.GetComponent<SpriteRenderer>().size.x;
 
             m_viewModel.WatchWorld(world, explosionWatcher, tileWatcher, laserBeamWatcher);
-        }
-
-        private void CreateItems(Registry registry)
-        {
-            var knifeTargetProvider = TargetProvider.CreateAtk(
-                Pattern.Default,
-                Handlers.GeneralChain
-            );
-
-            m_shovelItem = new ModularShovel(
-                new ItemMetadata("Base_Shovel"),
-                TargetProvider.SimpleDig
-            );
-
-            m_shovelItem.RegisterSelf(registry);
-
-            m_knifeItem = new ModularWeapon(
-                new ItemMetadata("Base_Knife"),
-                knifeTargetProvider
-            );
-
-            m_knifeItem.RegisterSelf(registry);
-
-            m_spearItem = new ModularWeapon(
-                new ItemMetadata("Base_Spear"),
-                TargetProvider.CreateAtk(
-                    new Pattern(
-                        new Piece
-                        {
-                            dir = IntVector2.Right,
-                            pos = IntVector2.Right,
-                            reach = null,
-                        },
-                        new Piece
-                        {
-                            dir = IntVector2.Right,
-                            pos = IntVector2.Right * 2,
-                            reach = new List<int>(1) { 1 }
-                        }
-                    ),
-                    Handlers.GeneralChain
-                )
-            );
-
-            m_spearItem.RegisterSelf(registry);
-
-            // Reference this item once so that it is added to the registry
-            // var _ = Bow.DefaultItem;
-        }
-
-        public void CreateWorldEvents(Registry registry)
-        {
-            Explosion.EventPath.Event.RegisterSelf(registry);
-            Laser.EventPath.Event.RegisterSelf(registry);
-            TileStuff.CreatedEventPath.Event.RegisterSelf(registry);
         }
 
         private Generator CreateRunGenerator()

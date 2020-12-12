@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using Hopper.Core;
 using Hopper.Utils.Vector;
 using Hopper.ViewModel;
-using Hopper.Test_Content;
 using UnityEngine;
+using Hopper.Test_Content.Explosion;
 
 namespace Hopper.View
 {
