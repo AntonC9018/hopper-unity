@@ -33,7 +33,7 @@ namespace Hopper
         {
             var knifeTargetProvider = TargetProvider.CreateAtk(
                 Pattern.Default,
-                Handlers.GeneralChain
+                Handlers.DefaultAtkChain
             );
 
             ShovelItem = new ModularShovel(
@@ -65,7 +65,7 @@ namespace Hopper
                             reach = new int[] { 1 }
                         }
                     ),
-                    Handlers.GeneralChain
+                    Handlers.DefaultAtkChain
                 )
             );
 

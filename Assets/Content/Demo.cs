@@ -1,23 +1,15 @@
-﻿using System.Collections.Generic;
-using Hopper.Core;
+﻿using Hopper.Core;
 using Hopper.Core.Generation;
 using Hopper.Core.History;
 using Hopper.Core.Items;
-using Hopper.Core.Targeting;
+using Hopper.Core.Mods;
+using Hopper.Test_Content;
+using Hopper.Test_Content.Status.Freeze;
 using Hopper.Utils.Vector;
 
 using Hopper.View;
 using Hopper.ViewModel;
-
-using Hopper.Test_Content;
-
 using UnityEngine;
-using Hopper.Core.Retouchers;
-using Hopper.Core.Stats.Basic;
-using Hopper.Test_Content.Explosion;
-using Hopper.Core.Mods;
-using Hopper.Test;
-using Hopper.Test_Content.Trap;
 
 namespace Hopper
 {
@@ -116,7 +108,7 @@ namespace Hopper
             // m_world.SpawnEntity(testMod.Floor.BlockingTrapFactory, player.Pos + IntVector2.Right);
 
             /* A dummy you can attack but it wouldn't take damage */
-            m_world.SpawnEntity(testMod.Mob.DummyFactory, player.Pos + IntVector2.Right);
+            // m_world.SpawnEntity(testMod.Mob.DummyFactory, player.Pos + IntVector2.Right);
 
             /* Knife and Shovel basic equipment. */
             // player.Inventory.Equip(demoMod.KnifeItem);
@@ -130,35 +122,35 @@ namespace Hopper
             // player.Inventory.Equip(new PackedItem(new ItemMetadata("bombs"), testMod.Bomb.item, 10000));
 
             /* Knippers (explody boys). */
-            // m_world.SpawnEntity(Knipper.Factory, new IntVector2(center.x + 4, center.y));
-            // m_world.SpawnEntity(Knipper.Factory, new IntVector2(center.x + 3, center.y));
+            // m_world.SpawnEntity(testMod.Mob.KnipperFactory, new IntVector2(center.x + 4, center.y));
+            // m_world.SpawnEntity(testMod.Mob.KnipperFactory, new IntVector2(center.x + 3, center.y));
 
             /* A test robot boss that spawns whelps behind itself and shoots lasers. */
-            // m_world.SpawnEntity(TestBoss.Factory, new IntVector2(center.x + 4, center.y));
+            // m_world.SpawnEntity(testMod.Boss.TestBossFactory, new IntVector2(center.x + 4, center.y));
 
             /* A barrier block blocks movement only through one side. The second coordinate is the 
                orientation, which for such blocks defines what side of the cell it is at.
             */
-            // m_world.SpawnEntity(m_factories.barrierFactory,
+            // m_world.SpawnEntity(testMod.Wall.BarrierFactory,
             //    new IntVector2(center.x + 2, center.y), new IntVector2(-1, 0));
 
             /* A chest contains something depending on the factory. It may spawn preset entities,
                items or draw them from specified in the config pools and gold.
                See how the factory is defined.
             */
-            // m_world.SpawnEntity(m_factories.chestFactory, new IntVector2(center.x + 1, center.y + 1));
+            // m_world.SpawnEntity(demoMod.ChestFactory, new IntVector2(center.x + 1, center.y + 1));
 
             /* Water blocks stop one movement, attack or dig. */
-            // m_world.SpawnEntity(m_factories.waterFactory, new IntVector2(center.x + 1, center.y + 1));
-            // m_world.SpawnEntity(m_factories.waterFactory, new IntVector2(center.x, center.y + 1));
+            // m_world.SpawnEntity(testMod.Floor.WaterFactory, new IntVector2(center.x + 1, center.y + 1));
+            // m_world.SpawnEntity(testMod.Floor.WaterFactory, new IntVector2(center.x, center.y + 1));
 
             /* Ice makes you slide, skipping movement, attack or dig. */
-            // m_world.SpawnEntity(m_factories.iceFactory, new IntVector2(center.x - 1, center.y - 1));
-            // m_world.SpawnEntity(m_factories.iceFactory, new IntVector2(center.x, center.y - 1));
-            // m_world.SpawnEntity(m_factories.iceFactory, new IntVector2(center.x + 1, center.y - 1));
+            // m_world.SpawnEntity(testMod.Floor.IceFloorFactory, new IntVector2(center.x - 1, center.y - 1));
+            // m_world.SpawnEntity(testMod.Floor.IceFloorFactory, new IntVector2(center.x, center.y - 1));
+            // m_world.SpawnEntity(testMod.Floor.IceFloorFactory, new IntVector2(center.x + 1, center.y - 1));
 
             /* Apply freezing on player. */
-            // FreezeStatus.Status.TryApply(player, new FreezeData(), FreezeStat.Path.DefaultFile);
+            // testMod.Status.FreezeStatus.TryApply(player, new FreezeData(), FreezeStat.Path.GetDefault(registry));
         }
 
         private ISuperPool CreateItemPool(DemoMod mod)
