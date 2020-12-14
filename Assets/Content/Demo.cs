@@ -4,7 +4,12 @@ using Hopper.Core.History;
 using Hopper.Core.Items;
 using Hopper.Core.Mods;
 using Hopper.Test_Content;
+using Hopper.Test_Content.Boss;
+using Hopper.Test_Content.Explosion;
+using Hopper.Test_Content.Floor;
+using Hopper.Test_Content.SimpleMobs;
 using Hopper.Test_Content.Status.Freeze;
+using Hopper.Test_Content.Trap;
 using Hopper.Utils.Vector;
 
 using Hopper.View;
@@ -57,21 +62,18 @@ namespace Hopper
             var modManager = new ModManager();
             modManager.Add<TestMod>();
             modManager.Add<DemoMod>();
-            var registry = modManager.RegisterAll();
-
-            var demoMod = registry.ModContent.Get<DemoMod>();
-            var testMod = registry.ModContent.Get<TestMod>();
-            var coreMod = registry.ModContent.Get<CoreMod>();
+            var result = modManager.RegisterAll();
+            var demoMod = result.mods.Get<DemoMod>();
 
             // Generates the map
             var generator = CreateRunGenerator();
 
-            m_world = new World(generator.grid.GetLength(1), generator.grid.GetLength(0), registry);
+            m_world = new World(generator.grid.GetLength(1), generator.grid.GetLength(0), result.repository);
             m_world.m_pools.UsePools(itemPool: CreateItemPool(demoMod), entityPool: new ThrowawayPool());
             m_world.InitializeWorldEvents();
 
             // Create view_model and hook it up to watch the world events
-            SetupViewModel(registry.ModContent, m_world);
+            SetupViewModel(demoMod, m_world);
 
             for (int y = 0; y < generator.grid.GetLength(1); y++)
             {
@@ -94,21 +96,21 @@ namespace Hopper
             var player = m_world.SpawnPlayer(demoMod.PlayerFactory, center);
 
             /* Bounce trap and a wall. */
-            // m_world.SpawnEntity(testMod.Trap.BounceTrapFactory, center + IntVector2.Right, IntVector2.Right);
+            // m_world.SpawnEntity(BounceTrap.Factory, center + IntVector2.Right, IntVector2.Right);
             // m_world.SpawnEntity(demoMod.WallFactory, center + IntVector2.Right * 2);
 
             /* Two bounce traps in a row. */
-            // m_world.SpawnEntity(testMod.Trap.BounceTrapFactory, center + IntVector2.Right, IntVector2.Right);
-            // m_world.SpawnEntity(testMod.Trap.BounceTrapFactory, center + IntVector2.Right * 2, IntVector2.Left);
+            // m_world.SpawnEntity(BounceTrap.Factory, center + IntVector2.Right, IntVector2.Right);
+            // m_world.SpawnEntity(BounceTrap.Factory, center + IntVector2.Right * 2, IntVector2.Left);
 
             /* Uncomment to disable bouncing for player. */
             // player.Stats.GetRaw(Push.Source.Resistance.Path)[Bounce.Source.GetId(registry)] = 3;
 
             /* A blocking trap. When you step on it, it closes you in. */
-            // m_world.SpawnEntity(testMod.Floor.BlockingTrapFactory, player.Pos + IntVector2.Right);
+            // m_world.SpawnEntity(BlockingTrap.Factory, player.Pos + IntVector2.Right);
 
             /* A dummy you can attack but it wouldn't take damage */
-            // m_world.SpawnEntity(testMod.Mob.DummyFactory, player.Pos + IntVector2.Right);
+            // m_world.SpawnEntity(Dummy.Factory, player.Pos + IntVector2.Right);
 
             /* Knife and Shovel basic equipment. */
             // player.Inventory.Equip(demoMod.KnifeItem);
@@ -119,19 +121,19 @@ namespace Hopper
             // player.Inventory.Equip(testMod.Item.DefaultBow);
 
             /* 10000 bombs. `Space` to use. */
-            // player.Inventory.Equip(new PackedItem(new ItemMetadata("bombs"), testMod.Bomb.item, 10000));
+            // player.Inventory.Equip(new PackedItem(new ItemMetadata("bombs"), Bomb.Item, 10000));
 
             /* Knippers (explody boys). */
-            // m_world.SpawnEntity(testMod.Mob.KnipperFactory, new IntVector2(center.x + 4, center.y));
-            // m_world.SpawnEntity(testMod.Mob.KnipperFactory, new IntVector2(center.x + 3, center.y));
+            m_world.SpawnEntity(Knipper.Factory, new IntVector2(center.x + 4, center.y));
+            // m_world.SpawnEntity(Knipper.Factory, new IntVector2(center.x + 3, center.y));
 
             /* A test robot boss that spawns whelps behind itself and shoots lasers. */
-            // m_world.SpawnEntity(testMod.Boss.TestBossFactory, new IntVector2(center.x + 4, center.y));
+            // m_world.SpawnEntity(TestBoss.Factory, new IntVector2(center.x + 4, center.y));
 
             /* A barrier block blocks movement only through one side. The second coordinate is the 
                orientation, which for such blocks defines what side of the cell it is at.
             */
-            // m_world.SpawnEntity(testMod.Wall.BarrierFactory,
+            // m_world.SpawnEntity(Barrier.Factory,
             //    new IntVector2(center.x + 2, center.y), new IntVector2(-1, 0));
 
             /* A chest contains something depending on the factory. It may spawn preset entities,
@@ -141,16 +143,16 @@ namespace Hopper
             // m_world.SpawnEntity(demoMod.ChestFactory, new IntVector2(center.x + 1, center.y + 1));
 
             /* Water blocks stop one movement, attack or dig. */
-            // m_world.SpawnEntity(testMod.Floor.WaterFactory, new IntVector2(center.x + 1, center.y + 1));
-            // m_world.SpawnEntity(testMod.Floor.WaterFactory, new IntVector2(center.x, center.y + 1));
+            // m_world.SpawnEntity(Water.Factory, new IntVector2(center.x + 1, center.y + 1));
+            // m_world.SpawnEntity(Water.Factory, new IntVector2(center.x, center.y + 1));
 
             /* Ice makes you slide, skipping movement, attack or dig. */
-            // m_world.SpawnEntity(testMod.Floor.IceFloorFactory, new IntVector2(center.x - 1, center.y - 1));
-            // m_world.SpawnEntity(testMod.Floor.IceFloorFactory, new IntVector2(center.x, center.y - 1));
-            // m_world.SpawnEntity(testMod.Floor.IceFloorFactory, new IntVector2(center.x + 1, center.y - 1));
+            // m_world.SpawnEntity(IceFloor.Factory, new IntVector2(center.x - 1, center.y - 1));
+            // m_world.SpawnEntity(IceFloor.Factory, new IntVector2(center.x, center.y - 1));
+            // m_world.SpawnEntity(IceFloor.Factory, new IntVector2(center.x + 1, center.y - 1));
 
             /* Apply freezing on player. */
-            // testMod.Status.FreezeStatus.TryApply(player, new FreezeData(), FreezeStat.Path.GetDefault(registry));
+            FreezeStatus.Status.TryApply(player, new FreezeData(), FreezeStat.Path.defaultFile);
         }
 
         private ISuperPool CreateItemPool(DemoMod mod)
@@ -174,12 +176,8 @@ namespace Hopper
             // return pool.Copy();
         }
 
-        private void SetupViewModel(ModsContent mods, World world)
+        private void SetupViewModel(DemoMod demoMod, World world)
         {
-            var coreMod = mods.Get<CoreMod>();
-            var testMod = mods.Get<TestMod>();
-            var demoMod = mods.Get<DemoMod>();
-
             var destroyOnDeathSieve = new SimpleSieve(AnimationCode.Destroy, UpdateCode.dead);
             var playerJumpSieve = new SimpleSieve(AnimationCode.Jump, UpdateCode.move_do);
 
@@ -188,33 +186,35 @@ namespace Hopper
 
             m_viewModel = new View_Model(animator);
             m_viewModel.SetDefaultPrefab(new Prefab<SceneEnt>(defaultPrefab, destroyOnDeathSieve));
+
             m_viewModel.SetPrefabForFactory(demoMod.PlayerFactory.Id,
                 new Prefab<SceneEnt>(playerPrefab, destroyOnDeathSieve, playerJumpSieve));
-            m_viewModel.SetPrefabForFactory(testMod.Mob.SkeletonFactory.Id,
-                new Prefab<SceneEnt>(enemyPrefab, destroyOnDeathSieve));
             m_viewModel.SetPrefabForFactory(demoMod.WallFactory.Id,
                 new Prefab<SceneEnt>(wallPrefab, destroyOnDeathSieve));
             m_viewModel.SetPrefabForFactory(demoMod.ChestFactory.Id,
                 new Prefab<SceneEnt>(chestPrefab, destroyOnDeathSieve));
-            m_viewModel.SetPrefabForFactory(testMod.Bomb.bombFactory.Id,
+
+            m_viewModel.SetPrefabForFactory(Skeleton.Factory.Id,
+                new Prefab<SceneEnt>(enemyPrefab, destroyOnDeathSieve));
+            m_viewModel.SetPrefabForFactory(BombEntity.Factory.Id,
                 new Prefab<SceneEnt>(bombPrefab, destroyOnDeathSieve));
-            m_viewModel.SetPrefabForFactory(coreMod.DroppedItemFactory.Id,
+            m_viewModel.SetPrefabForFactory(DroppedItem.Factory.Id,
                 new Prefab<RegularRotationSceneEnt>(droppedItemPrefab, destroyOnDeathSieve));
-            m_viewModel.SetPrefabForFactory(testMod.Floor.WaterFactory.Id,
+            m_viewModel.SetPrefabForFactory(Water.Factory.Id,
                 new Prefab<SceneEnt>(waterPrefab, destroyOnDeathSieve));
-            m_viewModel.SetPrefabForFactory(testMod.Floor.IceFloorFactory.Id,
+            m_viewModel.SetPrefabForFactory(IceFloor.Factory.Id,
                 new Prefab<SceneEnt>(icePrefab, destroyOnDeathSieve));
-            m_viewModel.SetPrefabForFactory(testMod.Trap.BounceTrapFactory.Id,
+            m_viewModel.SetPrefabForFactory(BounceTrap.Factory.Id,
                 new Prefab<SceneEnt>(bounceTrapPrefab, destroyOnDeathSieve));
-            m_viewModel.SetPrefabForFactory(testMod.Wall.BarrierFactory.Id,
+            m_viewModel.SetPrefabForFactory(Barrier.Factory.Id,
                 new Prefab<RegularRotationSceneEnt>(barrierPrefab, destroyOnDeathSieve));
-            m_viewModel.SetPrefabForFactory(testMod.Floor.RealBarrierFactory.Id,
+            m_viewModel.SetPrefabForFactory(RealBarrier.Factory.Id,
                 new Prefab<RegularRotationSceneEnt>(barrierPrefab, destroyOnDeathSieve));
-            m_viewModel.SetPrefabForFactory(testMod.Mob.KnipperFactory.Id,
+            m_viewModel.SetPrefabForFactory(Knipper.Factory.Id,
                 new Prefab<SceneEnt>(knipperPrefab, destroyOnDeathSieve));
-            m_viewModel.SetPrefabForFactory(testMod.Boss.TestBossFactory.Id,
+            m_viewModel.SetPrefabForFactory(TestBoss.Factory.Id,
                 new Prefab<SceneEnt>(testBossPrefab, destroyOnDeathSieve));
-            m_viewModel.SetPrefabForFactory(testMod.Boss.WhelpFactory.Id,
+            m_viewModel.SetPrefabForFactory(TestBoss.Whelp.Factory.Id,
                 new Prefab<SceneEnt>(whelpPrefab, destroyOnDeathSieve));
 
             var explosionWatcher = new ExplosionWatcher(explosionPrefab);

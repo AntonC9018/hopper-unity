@@ -18,15 +18,11 @@ namespace Hopper
         public ModularWeapon KnifeItem;
         public ModularWeapon SpearItem;
 
-        public DemoMod(ModsContent mods)
+        public int Offset => 200;
+        public string Name => "demo";
+
+        public DemoMod()
         {
-            CreateItems();
-            var retouchers = mods.Get<CoreMod>().Retouchers;
-            PlayerFactory = CreatePlayerFactory(retouchers).AddBehavior<Statused>();
-            ChestFactory = new EntityFactory<Entity>().AddBehavior<Interactable>(
-                new Interactable.Config(new PoolItemContentSpec("zone1/stuff"))
-            );
-            WallFactory = new EntityFactory<Wall>().AddBehavior<Damageable>();
         }
 
         private void CreateItems()
@@ -74,7 +70,7 @@ namespace Hopper
             // var _ = Bow.DefaultItem;
         }
 
-        private EntityFactory<Player> CreatePlayerFactory(CoreRetouchers retouchers)
+        private EntityFactory<Player> CreatePlayerFactory()
         {
             var moveAction = new BehaviorAction<Moving>();
             var digAction = new BehaviorAction<Digging>();
@@ -97,7 +93,7 @@ namespace Hopper
                 moveAction
             );
 
-            var playerFactory = Player.CreateFactory(retouchers)
+            var playerFactory = Player.CreateFactory()
                 .AddBehavior<Controllable>(new Controllable.Config
                 {
                     defaultAction = defaultAction
@@ -106,8 +102,15 @@ namespace Hopper
             return playerFactory;
         }
 
-        public void RegisterSelf(Registry registry)
+        public void RegisterSelf(ModSubRegistry registry)
         {
+            CreateItems();
+            PlayerFactory = CreatePlayerFactory().AddBehavior<Statused>();
+            ChestFactory = new EntityFactory<Entity>().AddBehavior<Interactable>(
+                new Interactable.Config(new PoolItemContentSpec("zone1/stuff"))
+            );
+            WallFactory = new EntityFactory<Wall>().AddBehavior<Damageable>();
+
             ShovelItem.RegisterSelf(registry);
             KnifeItem.RegisterSelf(registry);
             SpearItem.RegisterSelf(registry);
@@ -117,6 +120,18 @@ namespace Hopper
             WallFactory.RegisterSelf(registry);
 
             TileStuff.CreatedEventPath.Event.RegisterSelf(registry);
+        }
+
+        public void Patch(Repository repository)
+        {
+            TileStuff.CreatedEventPath.Event.Patch(repository);
+        }
+
+        public void AfterPatch(Repository repository)
+        {
+            PlayerFactory.AfterPatch(repository);
+            ChestFactory.AfterPatch(repository);
+            WallFactory.AfterPatch(repository);
         }
     }
 }
