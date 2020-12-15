@@ -68,7 +68,7 @@ namespace Hopper
             // Generates the map
             var generator = CreateRunGenerator();
 
-            m_world = new World(generator.grid.GetLength(1), generator.grid.GetLength(0), result.repository);
+            m_world = new World(generator.grid.GetLength(1), generator.grid.GetLength(0), result.patchArea);
             m_world.m_pools.UsePools(itemPool: CreateItemPool(demoMod), entityPool: new ThrowawayPool());
             m_world.InitializeWorldEvents();
 
@@ -113,9 +113,9 @@ namespace Hopper
             // m_world.SpawnEntity(Dummy.Factory, player.Pos + IntVector2.Right);
 
             /* Knife and Shovel basic equipment. */
-            // player.Inventory.Equip(demoMod.KnifeItem);
-            // player.Inventory.Equip(demoMod.ShovelItem);
-            // player.Inventory.Equip(demoMod.SpearItem);
+            player.Inventory.Equip(demoMod.KnifeItem);
+            player.Inventory.Equip(demoMod.ShovelItem);
+            player.Inventory.Equip(demoMod.SpearItem);
 
             /* Bow. X toggle charge, vector input to shoot */
             // player.Inventory.Equip(testMod.Item.DefaultBow);
@@ -124,7 +124,7 @@ namespace Hopper
             // player.Inventory.Equip(new PackedItem(new ItemMetadata("bombs"), Bomb.Item, 10000));
 
             /* Knippers (explody boys). */
-            m_world.SpawnEntity(Knipper.Factory, new IntVector2(center.x + 4, center.y));
+            // m_world.SpawnEntity(Knipper.Factory, new IntVector2(center.x + 4, center.y));
             // m_world.SpawnEntity(Knipper.Factory, new IntVector2(center.x + 3, center.y));
 
             /* A test robot boss that spawns whelps behind itself and shoots lasers. */

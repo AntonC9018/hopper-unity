@@ -103,7 +103,7 @@ namespace Hopper
             return playerFactory;
         }
 
-        public void RegisterSelf(ModSubRegistry registry)
+        public void RegisterSelf(ModRegistry registry)
         {
             CreateItems();
             PlayerFactory = CreatePlayerFactory().AddBehavior<Statused>();
@@ -123,16 +123,20 @@ namespace Hopper
             TileStuff.CreatedEventPath.Event.RegisterSelf(registry);
         }
 
-        public void Patch(Repository repository)
+        public void PrePatch(PatchArea patchArea)
         {
-            TileStuff.CreatedEventPath.Event.Patch(repository);
         }
 
-        public void AfterPatch(Repository repository)
+        public void Patch(PatchArea patchArea)
         {
-            PlayerFactory.AfterPatch(repository);
-            ChestFactory.AfterPatch(repository);
-            WallFactory.AfterPatch(repository);
+            TileStuff.CreatedEventPath.Event.Patch(patchArea);
+        }
+
+        public void PostPatch(PatchArea patchArea)
+        {
+            PlayerFactory.PostPatch(patchArea);
+            ChestFactory.PostPatch(patchArea);
+            WallFactory.PostPatch(patchArea);
         }
     }
 }
