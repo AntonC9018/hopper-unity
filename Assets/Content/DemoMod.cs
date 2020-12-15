@@ -2,6 +2,7 @@ using Hopper.Core;
 using Hopper.Core.Behaviors.Basic;
 using Hopper.Core.Items;
 using Hopper.Core.Mods;
+using Hopper.Core.Registry;
 using Hopper.Core.Retouchers;
 using Hopper.Core.Targeting;
 using Hopper.Utils.Vector;
