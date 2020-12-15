@@ -3,7 +3,7 @@ using System.Linq;
 using Hopper.Core;
 using Hopper.Utils.Vector;
 
-namespace Hopper.ViewModel
+namespace Hopper.Controller
 {
     public delegate void TimerEventHandler(AnimationInfo info);
 

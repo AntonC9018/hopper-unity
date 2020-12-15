@@ -1,6 +1,6 @@
 using Hopper.Utils.Vector;
 
-namespace Hopper.ViewModel
+namespace Hopper.Controller
 {
     public enum AnimationCode
     {

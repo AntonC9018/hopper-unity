@@ -1,5 +1,5 @@
 using System;
-using Hopper.ViewModel;
+using Hopper.Controller;
 using UnityEngine;
 
 namespace Hopper.View

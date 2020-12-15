@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using Hopper.Utils.Vector;
 
-namespace Hopper.ViewModel
+namespace Hopper.Controller
 {
     public class HistoryData
     {
         public EntityStatesAndSieves entityStatesAndSieves;
-        public ISceneEnt sceneEnt;
+        public ISceneEntity sceneEnt;
     }
 
     public interface IAnimator

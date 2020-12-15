@@ -1,6 +1,6 @@
 using Hopper.Core.History;
 
-namespace Hopper.ViewModel
+namespace Hopper.Controller
 {
     public interface ISieve
     {

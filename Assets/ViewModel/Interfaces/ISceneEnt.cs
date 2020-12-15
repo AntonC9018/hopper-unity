@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using Hopper.Utils.Vector;
 
-namespace Hopper.ViewModel
+namespace Hopper.Controller
 {
-    public interface ISceneEnt
+    public interface ISceneEntity
     {
         void EnterPhase(Hopper.Core.History.EntityState finalState, ISieve sieve, AnimationInfo animationInfo);
         void Update(AnimationInfo animationInfo);

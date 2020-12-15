@@ -1,4 +1,4 @@
-namespace Hopper.ViewModel
+namespace Hopper.Controller
 {
 
     public interface ITimer

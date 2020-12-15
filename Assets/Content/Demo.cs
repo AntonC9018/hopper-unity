@@ -3,6 +3,7 @@ using Hopper.Core.Generation;
 using Hopper.Core.History;
 using Hopper.Core.Items;
 using Hopper.Core.Mods;
+using Hopper.Core.Stats.Basic;
 using Hopper.Test_Content;
 using Hopper.Test_Content.Boss;
 using Hopper.Test_Content.Explosion;
@@ -13,7 +14,7 @@ using Hopper.Test_Content.Trap;
 using Hopper.Utils.Vector;
 
 using Hopper.View;
-using Hopper.ViewModel;
+using Hopper.Controller;
 using UnityEngine;
 
 namespace Hopper
@@ -41,7 +42,7 @@ namespace Hopper
         public GameObject defaultPrefab;
 
         private World m_world;
-        private View_Model m_viewModel;
+        private ViewController m_controller;
         private InputManager m_inputManager;
 
         private void Update()
@@ -104,7 +105,7 @@ namespace Hopper
             // m_world.SpawnEntity(BounceTrap.Factory, center + IntVector2.Right * 2, IntVector2.Left);
 
             /* Uncomment to disable bouncing for player. */
-            // player.Stats.GetRaw(Push.Source.Resistance.Path)[Bounce.Source.GetId(registry)] = 3;
+            // player.Stats.GetRaw(Push.Source.Resistance.Path)[Bounce.Source.Id] = 3;
 
             /* A blocking trap. When you step on it, it closes you in. */
             // m_world.SpawnEntity(BlockingTrap.Factory, player.Pos + IntVector2.Right);
@@ -184,46 +185,46 @@ namespace Hopper
             View.Timer timer = gameObject.AddComponent<View.Timer>();
             var animator = new ViewAnimator(new SceneEnt(Camera.main.gameObject), timer);
 
-            m_viewModel = new View_Model(animator);
-            m_viewModel.SetDefaultPrefab(new Prefab<SceneEnt>(defaultPrefab, destroyOnDeathSieve));
+            m_controller = new ViewController(animator);
+            m_controller.SetDefaultModel(new Model<SceneEnt>(defaultPrefab, destroyOnDeathSieve));
 
-            m_viewModel.SetPrefabForFactory(demoMod.PlayerFactory.Id,
-                new Prefab<SceneEnt>(playerPrefab, destroyOnDeathSieve, playerJumpSieve));
-            m_viewModel.SetPrefabForFactory(demoMod.WallFactory.Id,
-                new Prefab<SceneEnt>(wallPrefab, destroyOnDeathSieve));
-            m_viewModel.SetPrefabForFactory(demoMod.ChestFactory.Id,
-                new Prefab<SceneEnt>(chestPrefab, destroyOnDeathSieve));
+            m_controller.SetModelForFactory(demoMod.PlayerFactory.Id,
+                new Model<SceneEnt>(playerPrefab, destroyOnDeathSieve, playerJumpSieve));
+            m_controller.SetModelForFactory(demoMod.WallFactory.Id,
+                new Model<SceneEnt>(wallPrefab, destroyOnDeathSieve));
+            m_controller.SetModelForFactory(demoMod.ChestFactory.Id,
+                new Model<SceneEnt>(chestPrefab, destroyOnDeathSieve));
 
-            m_viewModel.SetPrefabForFactory(Skeleton.Factory.Id,
-                new Prefab<SceneEnt>(enemyPrefab, destroyOnDeathSieve));
-            m_viewModel.SetPrefabForFactory(BombEntity.Factory.Id,
-                new Prefab<SceneEnt>(bombPrefab, destroyOnDeathSieve));
-            m_viewModel.SetPrefabForFactory(DroppedItem.Factory.Id,
-                new Prefab<RegularRotationSceneEnt>(droppedItemPrefab, destroyOnDeathSieve));
-            m_viewModel.SetPrefabForFactory(Water.Factory.Id,
-                new Prefab<SceneEnt>(waterPrefab, destroyOnDeathSieve));
-            m_viewModel.SetPrefabForFactory(IceFloor.Factory.Id,
-                new Prefab<SceneEnt>(icePrefab, destroyOnDeathSieve));
-            m_viewModel.SetPrefabForFactory(BounceTrap.Factory.Id,
-                new Prefab<SceneEnt>(bounceTrapPrefab, destroyOnDeathSieve));
-            m_viewModel.SetPrefabForFactory(Barrier.Factory.Id,
-                new Prefab<RegularRotationSceneEnt>(barrierPrefab, destroyOnDeathSieve));
-            m_viewModel.SetPrefabForFactory(RealBarrier.Factory.Id,
-                new Prefab<RegularRotationSceneEnt>(barrierPrefab, destroyOnDeathSieve));
-            m_viewModel.SetPrefabForFactory(Knipper.Factory.Id,
-                new Prefab<SceneEnt>(knipperPrefab, destroyOnDeathSieve));
-            m_viewModel.SetPrefabForFactory(TestBoss.Factory.Id,
-                new Prefab<SceneEnt>(testBossPrefab, destroyOnDeathSieve));
-            m_viewModel.SetPrefabForFactory(TestBoss.Whelp.Factory.Id,
-                new Prefab<SceneEnt>(whelpPrefab, destroyOnDeathSieve));
+            m_controller.SetModelForFactory(Skeleton.Factory.Id,
+                new Model<SceneEnt>(enemyPrefab, destroyOnDeathSieve));
+            m_controller.SetModelForFactory(BombEntity.Factory.Id,
+                new Model<SceneEnt>(bombPrefab, destroyOnDeathSieve));
+            m_controller.SetModelForFactory(DroppedItem.Factory.Id,
+                new Model<RegularRotationSceneEnt>(droppedItemPrefab, destroyOnDeathSieve));
+            m_controller.SetModelForFactory(Water.Factory.Id,
+                new Model<SceneEnt>(waterPrefab, destroyOnDeathSieve));
+            m_controller.SetModelForFactory(IceFloor.Factory.Id,
+                new Model<SceneEnt>(icePrefab, destroyOnDeathSieve));
+            m_controller.SetModelForFactory(BounceTrap.Factory.Id,
+                new Model<SceneEnt>(bounceTrapPrefab, destroyOnDeathSieve));
+            m_controller.SetModelForFactory(Barrier.Factory.Id,
+                new Model<RegularRotationSceneEnt>(barrierPrefab, destroyOnDeathSieve));
+            m_controller.SetModelForFactory(RealBarrier.Factory.Id,
+                new Model<RegularRotationSceneEnt>(barrierPrefab, destroyOnDeathSieve));
+            m_controller.SetModelForFactory(Knipper.Factory.Id,
+                new Model<SceneEnt>(knipperPrefab, destroyOnDeathSieve));
+            m_controller.SetModelForFactory(TestBoss.Factory.Id,
+                new Model<SceneEnt>(testBossPrefab, destroyOnDeathSieve));
+            m_controller.SetModelForFactory(TestBoss.Whelp.Factory.Id,
+                new Model<SceneEnt>(whelpPrefab, destroyOnDeathSieve));
 
             var explosionWatcher = new ExplosionWatcher(explosionPrefab);
             var laserBeamWatcher = new LaserBeamWatcher(laserBeamHeadPrefab, laserBeamBodyPrefab);
-            var tileWatcher = new TileWatcher(new Prefab<SceneEnt>(tilePrefab));
+            var tileWatcher = new TileWatcher(new Model<SceneEnt>(tilePrefab));
 
             Reference.Width = playerPrefab.GetComponent<SpriteRenderer>().size.x;
 
-            m_viewModel.WatchWorld(world, explosionWatcher, tileWatcher, laserBeamWatcher);
+            m_controller.WatchWorld(world, explosionWatcher, tileWatcher, laserBeamWatcher);
         }
 
         private Generator CreateRunGenerator()

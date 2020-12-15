@@ -3,24 +3,24 @@ using System.Linq;
 using Hopper.Core;
 using Hopper.Utils;
 using Hopper.Core.History;
-using LogicEnt = Hopper.Core.Entity;  // LogicEnt = Logent = Logical Entity
+using LogicalEntity = Hopper.Core.Entity;  // LogicEnt = Logent = Logical Entity
 
-namespace Hopper.ViewModel
+namespace Hopper.Controller
 {
-    public class View_Model
+    public class ViewController
     {
-        private Dictionary<int, IPrefab<ISceneEnt>> m_factoryIdPrefabMap;
-        private Dictionary<LogicEnt, ISceneEnt> m_activeScentsMap;
-        private List<LogicEnt> m_players;
-        private IPrefab<ISceneEnt> m_defaultPrefab;
+        private Dictionary<int, IModel<ISceneEntity>> m_factoryIdModelMap;
+        private Dictionary<LogicalEntity, ISceneEntity> m_activeScentsMap;
+        private List<LogicalEntity> m_players;
+        private IModel<ISceneEntity> m_defaultModel;
         private IAnimator m_animator; // not really an animator
         private CameraState m_cameraState;
 
-        public View_Model(IAnimator animator)
+        public ViewController(IAnimator animator)
         {
-            m_factoryIdPrefabMap = new Dictionary<int, IPrefab<ISceneEnt>>();
-            m_activeScentsMap = new Dictionary<LogicEnt, ISceneEnt>();
-            m_players = new List<LogicEnt>();
+            m_factoryIdModelMap = new Dictionary<int, IModel<ISceneEntity>>();
+            m_activeScentsMap = new Dictionary<LogicalEntity, ISceneEntity>();
+            m_players = new List<LogicalEntity>();
 
             // The contract between these two `managers` (their duties) should
             // be outlined more explicitly (currently heck knows where's the line between them)
@@ -41,24 +41,24 @@ namespace Hopper.ViewModel
         }
 
         // factory is the entity kind
-        public void SetPrefabForFactory(int factoryId, IPrefab<ISceneEnt> prefab)
+        public void SetModelForFactory(int factoryId, IModel<ISceneEntity> model)
         {
-            m_factoryIdPrefabMap[factoryId] = prefab;
+            m_factoryIdModelMap[factoryId] = model;
         }
 
-        public void SetDefaultPrefab(IPrefab<ISceneEnt> prefab)
+        public void SetDefaultModel(IModel<ISceneEntity> model)
         {
-            m_defaultPrefab = prefab;
+            m_defaultModel = model;
         }
 
-        private void AddScentForLogent(LogicEnt logent)
+        private void AddScentForLogent(LogicalEntity logent)
         {
             // TODO: spawn it on the screen at the exact timeframe (or phase) 
             // the easiest way to implement this would be through the sieves
             // which would unhide the entity, but then we need an extra phase for that
             // So this one's an open question
-            IPrefab<ISceneEnt> prefab = GetPrefabForLogent(logent);
-            ISceneEnt scent = prefab.Instantiate(logent.Pos, logent.Orientation);
+            IModel<ISceneEntity> prefab = GetPrefabForLogent(logent);
+            ISceneEntity scent = prefab.Instantiate(logent.Pos, logent.Orientation);
 
             m_activeScentsMap.Add(logent, scent);
 
@@ -77,15 +77,15 @@ namespace Hopper.ViewModel
             }
         }
 
-        private IPrefab<ISceneEnt> GetPrefabForLogent(LogicEnt logent)
+        private IModel<ISceneEntity> GetPrefabForLogent(LogicalEntity logent)
         {
             var factoryId = logent.GetFactoryId();
 
             // TODO: this should be a separate method
-            IPrefab<ISceneEnt> prefab = m_factoryIdPrefabMap.ContainsKey(factoryId)
-                ? m_factoryIdPrefabMap[factoryId]
-                : m_defaultPrefab;
-            return prefab;
+            IModel<ISceneEntity> model = m_factoryIdModelMap.ContainsKey(factoryId)
+                ? m_factoryIdModelMap[factoryId]
+                : m_defaultModel;
+            return model;
         }
 
         private void Update()
@@ -95,7 +95,7 @@ namespace Hopper.ViewModel
 
             foreach (var logent in m_activeScentsMap.Keys)
             {
-                ISceneEnt scent = m_activeScentsMap[logent];
+                ISceneEntity scent = m_activeScentsMap[logent];
                 EntityStatesAndSieves newData = GetPhaseStates(logent);
 
                 var dataPoint = new HistoryData
@@ -119,7 +119,7 @@ namespace Hopper.ViewModel
 
         private void RemoveDeadLogents()
         {
-            var logentsToRemove = new List<LogicEnt>();
+            var logentsToRemove = new List<LogicalEntity>();
             foreach (var logent in m_activeScentsMap.Keys)
             {
                 if (logent.IsDead)
@@ -133,7 +133,7 @@ namespace Hopper.ViewModel
             }
         }
 
-        private EntityStatesAndSieves GetPhaseStates(LogicEnt logent)
+        private EntityStatesAndSieves GetPhaseStates(LogicalEntity logent)
         {
             // construct the list of updates by phases
             // this is sort of necessary, but i sort of don't like it

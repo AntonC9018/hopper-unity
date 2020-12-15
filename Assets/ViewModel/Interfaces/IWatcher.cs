@@ -1,9 +1,9 @@
 using Hopper.Core;
 
-namespace Hopper.ViewModel
+namespace Hopper.Controller
 {
     public interface IWatcher
     {
-        void Watch(World world, View_Model vm);
+        void Watch(World world, ViewController vm);
     }
 }

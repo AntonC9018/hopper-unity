@@ -1,20 +1,19 @@
-using Hopper.ViewModel;
+using Hopper.Controller;
 using UnityEngine;
 using Hopper.Utils.Vector;
 using System.Collections.Generic;
-using Hopper.Core.History;
 using System.Linq;
 
 namespace Hopper.View
 {
-    public class Prefab<T> : IPrefab<T> where T : SceneEnt, new()
+    public class Model<T> : IModel<T> where T : SceneEnt, new()
     {
         private GameObject m_obj;
         private List<IViewSieve> m_sieves;
         public IReadOnlyList<ISieve> Sieves => m_sieves;
 
 
-        public Prefab(GameObject prefab, params IViewSieve[] sieves)
+        public Model(GameObject prefab, params IViewSieve[] sieves)
         {
             m_obj = prefab;
             m_sieves = sieves.ToList();

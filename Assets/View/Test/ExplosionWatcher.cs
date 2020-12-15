@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Hopper.Core;
 using Hopper.Utils.Vector;
-using Hopper.ViewModel;
+using Hopper.Controller;
 using UnityEngine;
 using Hopper.Test_Content.Explosion;
 
@@ -9,16 +9,16 @@ namespace Hopper.View
 {
     public class ExplosionWatcher : IWatcher
     {
-        private Prefab<ExplosionScent> m_explosionPrefab;
+        private Model<ExplosionScent> m_explosionModel;
         private List<ExplosionScent> m_goingExplosions;
 
         public ExplosionWatcher(GameObject prefab)
         {
-            m_explosionPrefab = new Prefab<ExplosionScent>(prefab);
+            m_explosionModel = new Model<ExplosionScent>(prefab);
             m_goingExplosions = new List<ExplosionScent>();
         }
 
-        public void Watch(World world, View_Model vm)
+        public void Watch(World world, ViewController vm)
         {
             Explosion.EventPath.Subscribe(world, AddExplosion);
             world.State.EndOfLoopEvent += UpdateGoingExplosions;
@@ -26,7 +26,7 @@ namespace Hopper.View
 
         private void AddExplosion(IntVector2 pos)
         {
-            var scent = m_explosionPrefab.Instantiate(pos, IntVector2.Right);
+            var scent = m_explosionModel.Instantiate(pos, IntVector2.Right);
             m_goingExplosions.Add(scent);
         }
 

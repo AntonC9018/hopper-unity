@@ -1,11 +1,11 @@
-using Hopper.ViewModel;
+using Hopper.Controller;
 using UnityEngine;
 using Hopper.Utils.Vector;
 using HopperVector2 = Hopper.Utils.Vector.Vector2;
 
 namespace Hopper.View
 {
-    public class SceneEnt : ISceneEnt, ICamera
+    public class SceneEnt : ISceneEntity, ICamera
     {
         public GameObject GameObject { protected get; set; }
         private HopperVector2 m_prevPos;
@@ -60,7 +60,7 @@ namespace Hopper.View
         }
 
         public void EnterPhase(
-            Hopper.Core.History.EntityState finalState, ISieve sieve, ViewModel.AnimationInfo animationInfo)
+            Hopper.Core.History.EntityState finalState, ISieve sieve, Controller.AnimationInfo animationInfo)
         {
             if (m_ignoreUpdates)
             {
@@ -91,7 +91,7 @@ namespace Hopper.View
             }
         }
 
-        public void Update(ViewModel.AnimationInfo animationInfo)
+        public void Update(Controller.AnimationInfo animationInfo)
         {
             if (m_ignoreUpdates)
             {

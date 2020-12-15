@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Hopper.Core;
-using Hopper.ViewModel;
+using Hopper.Controller;
 using Hopper.Utils.Vector;
 
 namespace Hopper.View
@@ -13,23 +13,23 @@ namespace Hopper.View
 
     public class TileWatcher : IWatcher
     {
-        private Prefab<SceneEnt> m_tilePrefab;
-        private List<ISceneEnt> m_scents;
+        private Model<SceneEnt> m_tileModel;
+        private List<ISceneEntity> m_scents;
 
-        public TileWatcher(Prefab<SceneEnt> prefab)
+        public TileWatcher(Model<SceneEnt> model)
         {
-            m_tilePrefab = prefab;
-            m_scents = new List<ISceneEnt>();
+            m_tileModel = model;
+            m_scents = new List<ISceneEntity>();
         }
 
-        public void Watch(World world, View_Model vm)
+        public void Watch(World world, ViewController vm)
         {
             TileStuff.CreatedEventPath.Subscribe(world, AddTile);
         }
 
         private void AddTile(IntVector2 pos)
         {
-            var scent = m_tilePrefab.Instantiate(pos, IntVector2.Right);
+            var scent = m_tileModel.Instantiate(pos, IntVector2.Right);
             m_scents.Add(scent);
         }
     }

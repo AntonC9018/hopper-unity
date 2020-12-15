@@ -1,5 +1,5 @@
 using Hopper.Core.History;
-using Hopper.ViewModel;
+using Hopper.Controller;
 
 namespace Hopper.View
 {

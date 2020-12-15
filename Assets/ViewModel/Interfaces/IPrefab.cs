@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using Hopper.Core.History;
 using Hopper.Utils.Vector;
 
-namespace Hopper.ViewModel
+namespace Hopper.Controller
 {
-    public interface IPrefab<out T> where T : ISceneEnt
+    public interface IModel<out T> where T : ISceneEntity
     {
         T Instantiate(IntVector2 pos, IntVector2 orientation);
         IReadOnlyList<ISieve> Sieves { get; }

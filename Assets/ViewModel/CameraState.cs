@@ -4,7 +4,7 @@ using Hopper.Core;
 using Hopper.Core.History;
 using Hopper.Utils.Vector;
 
-namespace Hopper.ViewModel
+namespace Hopper.Controller
 {
     public class CameraState
     {
