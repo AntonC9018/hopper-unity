@@ -16,6 +16,7 @@ using Hopper.Utils.Vector;
 using Hopper.View;
 using Hopper.Controller;
 using UnityEngine;
+using Hopper.Test_Content.Bind;
 
 namespace Hopper
 {
@@ -96,6 +97,9 @@ namespace Hopper
 
             var player = m_world.SpawnPlayer(demoMod.PlayerFactory, center);
 
+
+            m_world.SpawnEntity(Spider.Factory, center + IntVector2.Right, IntVector2.Right);
+
             /* Bounce trap and a wall. */
             // m_world.SpawnEntity(BounceTrap.Factory, center + IntVector2.Right, IntVector2.Right);
             // m_world.SpawnEntity(demoMod.WallFactory, center + IntVector2.Right * 2);
@@ -114,9 +118,9 @@ namespace Hopper
             // m_world.SpawnEntity(Dummy.Factory, player.Pos + IntVector2.Right);
 
             /* Knife and Shovel basic equipment. */
-            player.Inventory.Equip(demoMod.KnifeItem);
-            player.Inventory.Equip(demoMod.ShovelItem);
-            player.Inventory.Equip(demoMod.SpearItem);
+            // player.Inventory.Equip(demoMod.KnifeItem);
+            // player.Inventory.Equip(demoMod.ShovelItem);
+            // player.Inventory.Equip(demoMod.SpearItem);
 
             /* Bow. X toggle charge, vector input to shoot */
             // player.Inventory.Equip(testMod.Item.DefaultBow);
@@ -153,7 +157,7 @@ namespace Hopper
             // m_world.SpawnEntity(IceFloor.Factory, new IntVector2(center.x + 1, center.y - 1));
 
             /* Apply freezing on player. */
-            FreezeStatus.Status.TryApply(player, new FreezeData(), FreezeStat.Path.defaultFile);
+            // FreezeStatus.Status.TryApply(player, new FreezeData(), FreezeStat.Path.defaultFile);
         }
 
         private ISuperPool CreateItemPool(DemoMod mod)
