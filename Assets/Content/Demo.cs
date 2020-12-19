@@ -99,7 +99,7 @@ namespace Hopper
             var player = m_world.SpawnPlayer(demoMod.PlayerFactory, center);
 
             /* Spider binds you in place */
-            // m_world.SpawnEntity(Spider.Factory, center + IntVector2.Right, IntVector2.Right);
+            m_world.SpawnEntity(Spider.Factory, center + IntVector2.Right, new IntVector2(1, 1));
 
             /* Bounce trap and a wall. */
             // m_world.SpawnEntity(BounceTrap.Factory, center + IntVector2.Right, IntVector2.Right);
@@ -119,7 +119,7 @@ namespace Hopper
             // m_world.SpawnEntity(Dummy.Factory, player.Pos + IntVector2.Right);
 
             /* Knife and Shovel basic equipment. */
-            // player.Inventory.Equip(demoMod.KnifeItem);
+            player.Inventory.Equip(demoMod.KnifeItem);
             // player.Inventory.Equip(demoMod.ShovelItem);
             // player.Inventory.Equip(demoMod.SpearItem);
 
