@@ -9,7 +9,7 @@ using Hopper.Test_Content.Boss;
 using Hopper.Test_Content.Explosion;
 using Hopper.Test_Content.Floor;
 using Hopper.Test_Content.SimpleMobs;
-using Hopper.Test_Content.Status.Freeze;
+using Hopper.Test_Content.Status;
 using Hopper.Test_Content.Trap;
 using Hopper.Utils.Vector;
 
@@ -17,6 +17,7 @@ using Hopper.View;
 using Hopper.Controller;
 using UnityEngine;
 using Hopper.Test_Content.Bind;
+using Hopper.Test_Content.Status.Freezing;
 
 namespace Hopper
 {
@@ -97,8 +98,8 @@ namespace Hopper
 
             var player = m_world.SpawnPlayer(demoMod.PlayerFactory, center);
 
-
-            m_world.SpawnEntity(Spider.Factory, center + IntVector2.Right, IntVector2.Right);
+            /* Spider binds you in place */
+            // m_world.SpawnEntity(Spider.Factory, center + IntVector2.Right, IntVector2.Right);
 
             /* Bounce trap and a wall. */
             // m_world.SpawnEntity(BounceTrap.Factory, center + IntVector2.Right, IntVector2.Right);
@@ -157,7 +158,7 @@ namespace Hopper
             // m_world.SpawnEntity(IceFloor.Factory, new IntVector2(center.x + 1, center.y - 1));
 
             /* Apply freezing on player. */
-            // FreezeStatus.Status.TryApply(player, new FreezeData(), FreezeStat.Path.defaultFile);
+            // Freeze.Status.TryApply(player, new FreezeData(), Freeze.Path.defaultFile);
         }
 
         private ISuperPool CreateItemPool(DemoMod mod)
