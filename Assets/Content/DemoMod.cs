@@ -95,10 +95,7 @@ namespace Hopper
             );
 
             var playerFactory = Player.CreateFactory()
-                .AddBehavior<Controllable>(new Controllable.Config
-                {
-                    defaultAction = defaultAction
-                });
+                .AddBehavior(Controllable.Preset(defaultAction));
 
             return playerFactory;
         }
@@ -106,11 +103,12 @@ namespace Hopper
         public void RegisterSelf(ModRegistry registry)
         {
             CreateItems();
-            PlayerFactory = CreatePlayerFactory().AddBehavior<Statused>();
-            ChestFactory = new EntityFactory<Entity>().AddBehavior<Interactable>(
-                new Interactable.Config(new PoolItemContentSpec("zone1/stuff"))
-            );
-            WallFactory = new EntityFactory<Wall>().AddBehavior<Damageable>();
+            PlayerFactory = CreatePlayerFactory().AddBehavior(Statused.Preset);
+            ChestFactory = new EntityFactory<Entity>().AddBehavior(Interactable.Preset(
+                new PoolItemContentSpec("zone1/stuff")
+            ));
+
+            WallFactory = new EntityFactory<Wall>().AddBehavior(Damageable.Preset(2));
 
             ShovelItem.RegisterSelf(registry);
             KnifeItem.RegisterSelf(registry);

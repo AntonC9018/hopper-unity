@@ -61,10 +61,10 @@ namespace Hopper
             // Redirects System.Console.WriteLine to unity's console. By default, it goes to debug logs.
             Hopper.Utils.UnitySystemConsoleRedirector.Redirect();
 
-            var modManager = new ModManager();
-            modManager.Add<TestMod>();
-            modManager.Add<DemoMod>();
-            var result = modManager.RegisterAll();
+            var modLoader = new ModLoader();
+            modLoader.Add<TestMod>();
+            modLoader.Add<DemoMod>();
+            var result = modLoader.RegisterAll();
             var demoMod = result.mods.Get<DemoMod>();
 
             // Generates the map
